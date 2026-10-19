@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &400100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 400200}
+  - component: {fileID: 400300}
+  m_Layer: 0
+  m_Name: CatalogoObjetos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &400300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa38d03443394ad0a0222d9e171422b2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CatalogoObjetos
+  prefabGlobo: {fileID: 100300, guid: c8d4b0b9763343e78364fd49f68f9ec3, type: 3}
+  prefabGloboPedido: {fileID: 500300, guid: f17ecc256dce4f859be011df943c9d9b, type: 3}
+  spriteCafe: {fileID: 21300000, guid: 58960ac583af41fe896c2da23035ae0e, type: 3}
+  spriteLeche: {fileID: 21300000, guid: c5b8a9d493a048878b3b45515aa813ac, type: 3}
+  spriteChocolate: {fileID: 21300000, guid: ab769ee4f03c4b9e93394340889be318, type: 3}
+  spriteCafeMolido: {fileID: 21300000, guid: ed301d4ecad042199c2ae07527f4e637, type: 3}
+  spriteLecheEspumada: {fileID: 21300000, guid: 0789ca4aa94f4046b22550921242d73f, type: 3}
+  spriteCafePreparado: {fileID: 21300000, guid: acc5c5f8b203469f9d60b37d01ec29c8, type: 3}
+  spriteChocolatePreparado: {fileID: 21300000, guid: b6b1f21a844345cc8d554274d5b0d772, type: 3}
+  spriteCafeConLeche: {fileID: 21300000, guid: 5d200264c60542a4ad9d3cca1caac198, type: 3}
+  spriteChocolateConLeche: {fileID: 21300000, guid: 4211f4bf7aef4e6ab3079776bce93374, type: 3}
+  spriteGalletitaRedVelvet: {fileID: 21300000, guid: 725ec325e88643008db2cd78271f7d0f, type: 3}
+  spriteGalletitaVainillaChocolate: {fileID: 21300000, guid: a0d8c256654d49cd80b7637f5564ca54, type: 3}
+  spriteGalletitaChocolate: {fileID: 21300000, guid: 6441ed77b03643f580e39015be415482, type: 3}

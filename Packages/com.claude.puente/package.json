@@ -1,0 +1,7 @@
+{
+  "name": "com.claude.puente",
+  "version": "1.0.0",
+  "displayName": "Puente de pruebas (Claude)",
+  "description": "Herramienta del editor para que Claude pruebe el juego sin manejar la pantalla. NO es parte del parcial: se puede borrar la carpeta Packages/com.claude.puente antes de entregar.",
+  "unity": "6000.0"
+}

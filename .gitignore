@@ -107,3 +107,10 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# --- Barista Caótico ---
+# Herramienta de pruebas de Claude (resultados y capturas temporales; no es parte del juego)
+/PuenteClaude/
+# Temporales de los generadores de arte
+/Herramientas/ArteCP/_tmp/
+__pycache__/
