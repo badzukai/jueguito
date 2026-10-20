@@ -21,6 +21,43 @@ public class Bandeja : EstacionInteractiva
     private PlayerInventory.TipoObjeto galletita =
         PlayerInventory.TipoObjeto.Ninguno;
 
+    // Dónde se dibujan la bebida y la galletita, respecto de la bandeja.
+    // Se pueden acomodar desde el Inspector.
+    [SerializeField] private Vector3 posicionBebida = new Vector3(-0.22f, 0.12f, 0f);
+    [SerializeField] private Vector3 posicionGalletita = new Vector3(0.25f, 0.06f, 0f);
+
+    // Dibujos de lo que está apoyado en la bandeja (sin la nube de fondo),
+    // así el jugador ve qué dejó y si se equivocó.
+    private GloboObjeto globoBebida;
+    private GloboObjeto globoGalletita;
+
+    private void Start()
+    {
+        // Los dibujos los crea el catálogo, como los de la repisa.
+        CatalogoObjetos catalogo = FindFirstObjectByType<CatalogoObjetos>();
+
+        if (catalogo != null)
+        {
+            globoBebida = catalogo.CrearGlobo(transform, posicionBebida, false);
+            globoGalletita = catalogo.CrearGlobo(transform, posicionGalletita, false);
+        }
+
+        ActualizarDibujos();
+    }
+
+    // Muestra sobre la bandeja lo que tiene apoyado.
+    // Mostrar(Ninguno) oculta el dibujo, así que sirve también para vaciar.
+    private void ActualizarDibujos()
+    {
+        if (globoBebida == null || globoGalletita == null)
+        {
+            return;
+        }
+
+        globoBebida.Mostrar(bebida);
+        globoGalletita.Mostrar(galletita);
+    }
+
     // Este método se ejecuta cuando el jugador
     // se acerca a la bandeja y presiona E.
     public override void Interactuar(PlayerInventory inventario)
@@ -57,6 +94,7 @@ public class Bandeja : EstacionInteractiva
             // Pasamos la bebida de la mano a la bandeja.
             bebida = objeto;
             inventario.SoltarObjeto();
+            ActualizarDibujos();
 
             Debug.Log("Colocaste: " + bebida);
         }
@@ -73,6 +111,7 @@ public class Bandeja : EstacionInteractiva
             // Pasamos la galletita de la mano a la bandeja.
             galletita = objeto;
             inventario.SoltarObjeto();
+            ActualizarDibujos();
 
             Debug.Log("Colocaste: " + galletita);
         }
@@ -148,6 +187,7 @@ public class Bandeja : EstacionInteractiva
         {
             inventario.RecogerObjeto(galletita);
             galletita = PlayerInventory.TipoObjeto.Ninguno;
+            ActualizarDibujos();
             return;
         }
 
@@ -156,6 +196,7 @@ public class Bandeja : EstacionInteractiva
         {
             inventario.RecogerObjeto(bebida);
             bebida = PlayerInventory.TipoObjeto.Ninguno;
+            ActualizarDibujos();
             return;
         }
 
@@ -169,6 +210,7 @@ public class Bandeja : EstacionInteractiva
     {
         bebida = PlayerInventory.TipoObjeto.Ninguno;
         galletita = PlayerInventory.TipoObjeto.Ninguno;
+        ActualizarDibujos();
     }
 
     // ===================== CONSULTAS (para el tutorial) =====================

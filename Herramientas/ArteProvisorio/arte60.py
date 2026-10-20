@@ -1,3 +1,4 @@
+# (20/10: barra subida 0.5 -> la cocina llega hasta y 1.0)
 # Pixel art del layout 60/40 (cocina 60 %, café 40 %), vista cenital a 3/4.
 # Reusa las piezas de arte.py (personajes, despensas, bandeja, HUD) y agrega:
 #   - Fondo: el cuarto entero en una sola imagen (pared, café con sillones y mesitas, piso de la cocina).
@@ -84,11 +85,11 @@ def fondo():
     im = Img(W, H, (90, 48, 24, 255))
     # piso de la cocina (baldosas) y del café (tablones)
     b = baldosa()
-    for y in range(Y(0.5), H, 32):
+    for y in range(Y(1.0), H, 32):
         for x in range(-6, W, 32):
             im.paste(b, x, y)
     madera = A.piso_cocina()
-    for y in range(Y(3.0), Y(0.3), 32):
+    for y in range(Y(3.0), Y(0.8), 32):
         for x in range(0, W, 32):
             im.paste(madera, x, y)
     # pared del fondo (la base apoya en y = 2.9)
@@ -121,7 +122,7 @@ def fondo():
         p = A.planta()
         im.paste(p, X(x) - p.w // 2, Y(2.7) - p.h)
     # mesitas con puffs
-    for x, y in ((-7.3, 1.45), (7.3, 2.15)):
+    for x, y in ((-7.3, 1.85), (7.3, 2.15)):
         for dx, dy in ((-0.55, 0.15), (0.55, 0.15), (0, -0.3)):
             pf = puff()
             im.paste(pf, X(x + dx) - pf.w // 2, Y(y + dy) - pf.h // 2)
@@ -130,7 +131,7 @@ def fondo():
     # sombra suave debajo de la barra
     for x in range(W):
         for k in range(3):
-            im.set(x, Y(-0.6) + k, (0, 0, 0, 40 - k * 12))
+            im.set(x, Y(-0.1) + k, (0, 0, 0, 40 - k * 12))
     # mesada corrida detrás de la fila de abajo (rellena los huecos entre máquinas)
     tapa = Y(-2.5 - 52 / 32)
     im.rect(X(-6.2), tapa, X(6.2) - X(-6.2), 5, A.W1)

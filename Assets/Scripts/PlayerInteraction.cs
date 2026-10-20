@@ -7,8 +7,14 @@ using UnityEngine;
 // así el jugador sabe con qué va a interactuar antes de apretar.
 public class PlayerInteraction : MonoBehaviour
 {
-    // Distancia máxima a la que puede estar una estación para usarla.
-    [SerializeField] private float distanciaInteraccion = 1.2f;
+    // Distancia máxima entre el barista y el BORDE de una estación para usarla.
+    // Medimos hasta el borde (y no hasta el centro) porque las máquinas
+    // son grandes: así hay que estar pegado a la máquina para usarla.
+    [SerializeField] private float alcance = 0.8f;
+
+    // Las estaciones sin collider (las bandejas) se miden hasta su centro.
+    // Les "restamos" este radio para hacer de cuenta que medimos hasta su borde.
+    [SerializeField] private float radioSinCollider = 0.6f;
 
     // Inventario del barista.
     private PlayerInventory inventario;
@@ -19,6 +25,10 @@ public class PlayerInteraction : MonoBehaviour
     // Array "paralelo": en la posición i está el dibujo (SpriteRenderer)
     // de la estación i. Lo usamos para resaltarla.
     private SpriteRenderer[] dibujos;
+
+    // Otro array paralelo: el collider de cada estación (puede ser null
+    // si la estación no tiene, como las bandejas).
+    private Collider2D[] colliders;
 
     // Color con el que se pinta la estación más cercana.
     [SerializeField] private Color colorResaltado = new Color(1f, 0.88f, 0.55f);
@@ -45,10 +55,12 @@ public class PlayerInteraction : MonoBehaviour
 
         // Guardamos el dibujo de cada estación, también una sola vez.
         dibujos = new SpriteRenderer[estaciones.Length];
+        colliders = new Collider2D[estaciones.Length];
 
         for (int i = 0; i < estaciones.Length; i++)
         {
             dibujos[i] = estaciones[i].GetComponent<SpriteRenderer>();
+            colliders[i] = estaciones[i].GetComponent<Collider2D>();
         }
     }
 
@@ -135,7 +147,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // Arrancamos con la distancia máxima permitida.
         // Cada vez que encontramos algo más cerca, la achicamos.
-        float menorDistancia = distanciaInteraccion;
+        float menorDistancia = alcance;
 
         // Recorremos el array con un for, como vimos en clase.
         for (int i = 0; i < estaciones.Length; i++)
@@ -156,11 +168,24 @@ public class PlayerInteraction : MonoBehaviour
                 continue;
             }
 
-            // Calculamos la distancia entre el barista y la estación.
-            float distancia = Vector2.Distance(
-                transform.position,
-                estacion.transform.position
-            );
+            // Punto de la estación al que medimos la distancia.
+            // Si tiene collider, usamos ClosestPoint: devuelve el punto del
+            // borde del collider más cercano al barista.
+            // Si no tiene, usamos su posición.
+            Vector2 punto = estacion.transform.position;
+
+            if (colliders[i] != null)
+            {
+                punto = colliders[i].ClosestPoint(transform.position);
+            }
+
+            // Calculamos la distancia entre el barista y ese punto.
+            float distancia = Vector2.Distance(transform.position, punto);
+
+            if (colliders[i] == null)
+            {
+                distancia = distancia - radioSinCollider;
+            }
 
             // Nos quedamos con la estación más cercana.
             if (distancia < menorDistancia)

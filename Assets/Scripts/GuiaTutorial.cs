@@ -47,7 +47,7 @@ public class GuiaTutorial : MonoBehaviour
 
     // Altura (en el mundo) de la flecha cuando señala algo que está sobre la barra:
     // justo debajo de la barra, donde se para el barista.
-    private const float AlturaFlechaBarra = -0.85f;
+    private const float AlturaFlechaBarra = -0.35f;
 
     // Qué tan rápido y qué tan alto rebota la flecha.
     private const float VelocidadRebote = 6f;
