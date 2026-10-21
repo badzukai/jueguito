@@ -10,35 +10,35 @@ public class PlayerInteraction : MonoBehaviour
     // Distancia máxima entre el barista y el BORDE de una estación para usarla.
     // Medimos hasta el borde (y no hasta el centro) porque las máquinas
     // son grandes: así hay que estar pegado a la máquina para usarla.
-    [SerializeField] private float alcance = 0.8f;
+    [SerializeField] private float reach = 0.8f;
 
     // Las estaciones sin collider (las bandejas) se miden hasta su centro.
     // Les "restamos" este radio para hacer de cuenta que medimos hasta su borde.
-    [SerializeField] private float radioSinCollider = 0.6f;
+    [SerializeField] private float radiusWithoutCollider = 0.6f;
 
     // Inventario del barista.
-    private PlayerInventory inventario;
+    private PlayerInventory inventory;
 
     // Array con todas las estaciones de la escena.
-    private EstacionInteractiva[] estaciones;
+    private InteractiveStation[] stations;
 
     // Array "paralelo": en la posición i está el dibujo (SpriteRenderer)
     // de la estación i. Lo usamos para resaltarla.
-    private SpriteRenderer[] dibujos;
+    private SpriteRenderer[] drawings;
 
     // Otro array paralelo: el collider de cada estación (puede ser null
     // si la estación no tiene, como las bandejas).
     private Collider2D[] colliders;
 
     // Color con el que se pinta la estación más cercana.
-    [SerializeField] private Color colorResaltado = new Color(1f, 0.88f, 0.55f);
+    [SerializeField] private Color highlightColor = new Color(1f, 0.88f, 0.55f);
 
     // Posición (en el array) de la estación resaltada. -1 = ninguna.
-    private int indiceResaltado = -1;
+    private int highlightedIndex = -1;
 
     private void Awake()
     {
-        inventario = GetComponent<PlayerInventory>();
+        inventory = GetComponent<PlayerInventory>();
     }
 
     private void Start()
@@ -48,19 +48,19 @@ public class PlayerInteraction : MonoBehaviour
         // hacerlo cada vez que apretamos una tecla.
         // FindObjectsInactive.Include hace que también encuentre las
         // estaciones desactivadas (las bandejas empiezan ocultas).
-        estaciones = FindObjectsByType<EstacionInteractiva>(
+        stations = FindObjectsByType<InteractiveStation>(
             FindObjectsInactive.Include,
             FindObjectsSortMode.None
         );
 
         // Guardamos el dibujo de cada estación, también una sola vez.
-        dibujos = new SpriteRenderer[estaciones.Length];
-        colliders = new Collider2D[estaciones.Length];
+        drawings = new SpriteRenderer[stations.Length];
+        colliders = new Collider2D[stations.Length];
 
-        for (int i = 0; i < estaciones.Length; i++)
+        for (int i = 0; i < stations.Length; i++)
         {
-            dibujos[i] = estaciones[i].GetComponent<SpriteRenderer>();
-            colliders[i] = estaciones[i].GetComponent<Collider2D>();
+            drawings[i] = stations[i].GetComponent<SpriteRenderer>();
+            colliders[i] = stations[i].GetComponent<Collider2D>();
         }
     }
 
@@ -74,96 +74,96 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // Resaltamos la estación que se usaría con la E.
-        Resaltar(BuscarIndiceCercano(false));
+        Highlight(FindNearestIndex(false));
 
         // Si presionamos E, interactuamos con la estación más cercana.
         if (Input.GetKeyDown(KeyCode.E))
         {
-            EstacionInteractiva estacion = BuscarEstacionCercana(false);
+            InteractiveStation station = FindNearestStation(false);
 
-            if (estacion != null)
+            if (station != null)
             {
-                estacion.Interactuar(inventario);
+                station.Interact(inventory);
             }
         }
 
         // Si presionamos R, intentamos retirar un producto de una bandeja.
         if (Input.GetKeyDown(KeyCode.R))
         {
-            EstacionInteractiva estacion = BuscarEstacionCercana(true);
+            InteractiveStation station = FindNearestStation(true);
 
-            if (estacion != null)
+            if (station != null)
             {
-                Bandeja bandeja = estacion.GetComponent<Bandeja>();
-                bandeja.RetirarProducto(inventario);
+                Tray tray = station.GetComponent<Tray>();
+                tray.RemoveProduct(inventory);
             }
         }
     }
 
     // Pinta la estación de la posición "indice" y despinta la anterior.
-    private void Resaltar(int indice)
+    private void Highlight(int index)
     {
         // Si es la misma que ya estaba resaltada, no hay nada que cambiar.
-        if (indice == indiceResaltado)
+        if (index == highlightedIndex)
         {
             return;
         }
 
         // Devolvemos la anterior a su color normal (blanco = sin teñir).
-        if (indiceResaltado != -1 && dibujos[indiceResaltado] != null)
+        if (highlightedIndex != -1 && drawings[highlightedIndex] != null)
         {
-            dibujos[indiceResaltado].color = Color.white;
+            drawings[highlightedIndex].color = Color.white;
         }
 
         // Pintamos la nueva.
-        if (indice != -1 && dibujos[indice] != null)
+        if (index != -1 && drawings[index] != null)
         {
-            dibujos[indice].color = colorResaltado;
+            drawings[index].color = highlightColor;
         }
 
-        indiceResaltado = indice;
+        highlightedIndex = index;
     }
 
     // Devuelve la estación más cercana al barista,
     // o null si no hay ninguna dentro de la distancia de interacción.
-    // soloBandejas: si es true, ignora todo lo que no sea una Bandeja.
-    private EstacionInteractiva BuscarEstacionCercana(bool soloBandejas)
+    // onlyTrays: si es true, ignora todo lo que no sea una Bandeja.
+    private InteractiveStation FindNearestStation(bool onlyTrays)
     {
-        int indice = BuscarIndiceCercano(soloBandejas);
+        int index = FindNearestIndex(onlyTrays);
 
-        if (indice == -1)
+        if (index == -1)
         {
             return null;
         }
 
-        return estaciones[indice];
+        return stations[index];
     }
 
-    // Igual que BuscarEstacionCercana, pero devuelve la POSICIÓN en el array
+    // Igual que FindNearestStation, pero devuelve la POSICIÓN en el array
     // (o -1 si no hay ninguna cerca). Así también sabemos cuál es su dibujo.
-    private int BuscarIndiceCercano(bool soloBandejas)
+    private int FindNearestIndex(bool onlyTrays)
     {
-        int indiceCercano = -1;
+        int nearestIndex = -1;
 
         // Arrancamos con la distancia máxima permitida.
         // Cada vez que encontramos algo más cerca, la achicamos.
-        float menorDistancia = alcance;
+        float shortestDistance = reach;
 
         // Recorremos el array con un for, como vimos en clase.
-        for (int i = 0; i < estaciones.Length; i++)
+        for (int i = 0; i < stations.Length; i++)
         {
-            EstacionInteractiva estacion = estaciones[i];
+            InteractiveStation station = stations[i];
 
             // Ignoramos las estaciones que están ocultas en este momento
             // (por ejemplo, la bandeja de un cliente que todavía no llegó).
-            if (!estacion.gameObject.activeInHierarchy)
+            if (!station.gameObject.activeInHierarchy)
             {
                 continue;
             }
 
             // Si buscamos solo bandejas, salteamos las que no lo son.
             // GetComponent devuelve null si el objeto no tiene ese componente.
-            if (soloBandejas && estacion.GetComponent<Bandeja>() == null)
+            if (onlyTrays && station.GetComponent<Tray>() == null)
             {
                 continue;
             }
@@ -172,29 +172,29 @@ public class PlayerInteraction : MonoBehaviour
             // Si tiene collider, usamos ClosestPoint: devuelve el punto del
             // borde del collider más cercano al barista.
             // Si no tiene, usamos su posición.
-            Vector2 punto = estacion.transform.position;
+            Vector2 point = station.transform.position;
 
             if (colliders[i] != null)
             {
-                punto = colliders[i].ClosestPoint(transform.position);
+                point = colliders[i].ClosestPoint(transform.position);
             }
 
             // Calculamos la distancia entre el barista y ese punto.
-            float distancia = Vector2.Distance(transform.position, punto);
+            float distance = Vector2.Distance(transform.position, point);
 
             if (colliders[i] == null)
             {
-                distancia = distancia - radioSinCollider;
+                distance = distance - radiusWithoutCollider;
             }
 
             // Nos quedamos con la estación más cercana.
-            if (distancia < menorDistancia)
+            if (distance < shortestDistance)
             {
-                menorDistancia = distancia;
-                indiceCercano = i;
+                shortestDistance = distance;
+                nearestIndex = i;
             }
         }
 
-        return indiceCercano;
+        return nearestIndex;
     }
 }

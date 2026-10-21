@@ -1,79 +1,79 @@
 using UnityEngine;
 
 // La chocolatera convierte el chocolate en chocolate preparado.
-// Hereda de EstacionInteractiva, así que se usa con la tecla E.
-public class Chocolatera : EstacionInteractiva
+// Hereda de InteractiveStation, así que se usa con la tecla E.
+public class ChocolateMachine : InteractiveStation
 {
     // Segundos que tarda en preparar el chocolate.
-    [SerializeField] private float tiempoPreparacion = 4f;
+    [SerializeField] private float preparationTime = 4f;
 
     // Dónde aparece el globo respecto de la chocolatera.
-    [SerializeField] private Vector3 posicionGlobo = new Vector3(0f, 0.85f, 0f);
+    [SerializeField] private Vector3 bubblePosition = new Vector3(0f, 0.85f, 0f);
 
     // Indica si la chocolatera está trabajando.
-    private bool preparando = false;
+    private bool preparing = false;
 
     // Segundos que faltan para terminar.
-    private float tiempoRestante = 0f;
+    private float timeRemaining = 0f;
 
     // Indica si hay chocolate listo para retirar.
-    private bool chocolateListo = false;
+    private bool chocolateReady = false;
 
     // Globo que muestra lo que hay adentro de la chocolatera.
-    private GloboObjeto globo;
+    private ItemBubble bubble;
 
     private void Start()
     {
         // Buscamos el catálogo de dibujos una sola vez y creamos el globo.
-        CatalogoObjetos catalogo = FindFirstObjectByType<CatalogoObjetos>();
+        ItemCatalog catalog = FindFirstObjectByType<ItemCatalog>();
 
-        if (catalogo != null)
+        if (catalog != null)
         {
-            globo = catalogo.CrearGlobo(transform, posicionGlobo, true);
+            bubble = catalog.CreateBubble(transform, bubblePosition, true);
         }
     }
 
     // Se ejecuta cuando el barista se acerca y presiona E.
-    public override void Interactuar(PlayerInventory inventario)
+    public override void Interact(PlayerInventory inventory)
     {
         // Si está trabajando, no podemos usarla.
-        if (preparando)
+        if (preparing)
         {
-            Avisar("La chocolatera está ocupada.");
+            Notify("La chocolatera está ocupada.");
             return;
         }
 
         // Si terminó, intentamos retirar el chocolate.
-        if (chocolateListo)
+        if (chocolateReady)
         {
             // Solo la vaciamos si el barista pudo agarrarlo.
-            if (inventario.RecogerObjeto(PlayerInventory.TipoObjeto.ChocolatePreparado))
+            if (inventory.PickUpItem(PlayerInventory.ItemType.HotChocolate))
             {
-                chocolateListo = false;
-                OcultarGlobo();
+                chocolateReady = false;
+                HideBubble();
             }
 
             return;
         }
 
         // Si está vacía, comprobamos el ingrediente.
-        if (inventario.ObtenerObjetoActual() == PlayerInventory.TipoObjeto.Chocolate)
+        if (inventory.GetCurrentItem() == PlayerInventory.ItemType.Chocolate)
         {
             // El chocolate pasa de la mano a la máquina.
-            inventario.SoltarObjeto();
+            inventory.DropItem();
 
             // Empezamos a contar el tiempo de preparación.
-            preparando = true;
-            tiempoRestante = tiempoPreparacion;
+            preparing = true;
+            timeRemaining = preparationTime;
 
             // Mostramos el chocolate medio transparente: se está preparando.
-            MostrarEnGlobo(PlayerInventory.TipoObjeto.Chocolate, false);
+            ShowInBubble(PlayerInventory.ItemType.Chocolate, false);
 
             Debug.Log("Preparando chocolate...");
         }
         else
         {
-            Avisar("La chocolatera necesita chocolate.");
+            Notify("La chocolatera necesita chocolate.");
         }
     }
 
@@ -81,49 +81,49 @@ public class Chocolatera : EstacionInteractiva
     private void Update()
     {
         // Si no está preparando nada, no hay nada que contar.
-        if (!preparando)
+        if (!preparing)
         {
             return;
         }
 
-        tiempoRestante -= Time.deltaTime;
+        timeRemaining -= Time.deltaTime;
 
         // Cuando el tiempo llega a cero, el chocolate está listo.
-        if (tiempoRestante <= 0f)
+        if (timeRemaining <= 0f)
         {
-            preparando = false;
-            chocolateListo = true;
+            preparing = false;
+            chocolateReady = true;
 
             // Ahora mostramos el chocolate preparado, bien visible.
-            MostrarEnGlobo(PlayerInventory.TipoObjeto.ChocolatePreparado, true);
+            ShowInBubble(PlayerInventory.ItemType.HotChocolate, true);
 
             Debug.Log("¡Chocolate preparado!");
 
             // Sonido de "¡listo!".
-            Sonidos s = ObtenerSonidos();
+            SoundEffects s = GetSoundEffects();
 
             if (s != null)
             {
-                s.MaquinaLista();
+                s.MachineReady();
             }
         }
     }
 
     // Muestra un objeto en el globo de la chocolatera (si el globo existe).
-    private void MostrarEnGlobo(PlayerInventory.TipoObjeto objeto, bool listo)
+    private void ShowInBubble(PlayerInventory.ItemType item, bool ready)
     {
-        if (globo != null)
+        if (bubble != null)
         {
-            globo.Mostrar(objeto, listo);
+            bubble.Show(item, ready);
         }
     }
 
     // Oculta el globo de la chocolatera (si el globo existe).
-    private void OcultarGlobo()
+    private void HideBubble()
     {
-        if (globo != null)
+        if (bubble != null)
         {
-            globo.Ocultar();
+            bubble.Hide();
         }
     }
 
@@ -132,14 +132,14 @@ public class Chocolatera : EstacionInteractiva
     // preguntar cómo está la chocolatera sin poder cambiarla.
 
     // Devuelve true mientras la chocolatera está preparando.
-    public bool EstaPreparando()
+    public bool IsPreparing()
     {
-        return preparando;
+        return preparing;
     }
 
     // Devuelve true si hay un chocolate listo para retirar.
-    public bool TieneChocolateListo()
+    public bool HasChocolateReady()
     {
-        return chocolateListo;
+        return chocolateReady;
     }
 }

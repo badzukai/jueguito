@@ -195,8 +195,8 @@ for panel, titulo, color_titulo in (('PanelVictoria', '\\xA1Ganaste!', '#3F7C27'
     _, _, cs = nodo('TextoResumen', hoja, (0.5, 1), (0.5, 1), (0, -150), (780, 270), (0.5, 1),
                     lambda g: [c_render(g), c_texto(g, 'Resumen de la partida', 34, '#2B1D16', v=256)])
     resumenes[panel] = cs[1]
-    for nombre, etiqueta, metodo, x in (('BotonReintentar', 'Volver a jugar', 'ReiniciarPartida', -205),
-                                        ('BotonMenu', 'Men\\xFA', 'IrAlMenu', 205)):
+    for nombre, etiqueta, metodo, x in (('BotonReintentar', 'Volver a jugar', 'RestartGame', -205),
+                                        ('BotonMenu', 'Men\\xFA', 'GoToMenu', 205)):
         def comp_boton(g, metodo=metodo):
             r = c_render(g)
             i = c_imagen(g, spr('HUD/Boton'), tipo=1, raycast=1)
@@ -207,9 +207,9 @@ for panel, titulo, color_titulo in (('PanelVictoria', '\\xA1Ganaste!', '#3F7C27'
 
 # referencias del GameManager a los textos del resumen
 d = by[gm]
-d = re.sub(r'\n  textoResumenVictoria: .*', '', d)
-d = re.sub(r'\n  textoResumenDerrota: .*', '', d)
-d = d.replace('\n  panelVictoria: ', '\n  textoResumenVictoria: {fileID: %d}\n  textoResumenDerrota: {fileID: %d}\n  panelVictoria: '
+d = re.sub(r'\n  victorySummaryText: .*', '', d)
+d = re.sub(r'\n  defeatSummaryText: .*', '', d)
+d = d.replace('\n  victoryPanel: ', '\n  victorySummaryText: {fileID: %d}\n  defeatSummaryText: {fileID: %d}\n  victoryPanel: '
               % (resumenes['PanelVictoria'], resumenes['PanelDerrota']), 1)
 by[gm] = d
 

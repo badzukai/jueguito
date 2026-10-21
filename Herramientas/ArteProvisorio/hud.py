@@ -14,7 +14,7 @@ CANVAS = re.search(r'(--- !u!223 &900000108\n.*?)(?=\n--- )', src, re.S).group(1
 SCALER = re.search(r'(--- !u!114 &900000109\n.*?)(?=\n--- )', src, re.S).group(1) + '\n'
 GUIOBJ = 'e6d6298195ed4ff79baccf9880b42393'  # no se usa (PanelTutorial borrado)
 
-GUIA_GUID = open(os.path.join(ASSETS, 'Scripts', 'GuiaTutorial.cs.meta')).read().split('guid: ')[1].split()[0]
+GUIA_GUID = open(os.path.join(ASSETS, 'Scripts', 'TutorialGuide.cs.meta')).read().split('guid: ')[1].split()[0]
 HUD_GUID = '7eac6faea5ea4976aebfaee21d96873c'
 IMAGE = 'fe87c0e1cc204ed48ad3b37840f39efc'
 CAFE_ICON = open(os.path.join(ASSETS, 'Sprites', 'Objetos', 'CafePreparado.png.meta')).read().split('guid: ')[1].split()[0]
@@ -216,10 +216,10 @@ out += ('--- !u!114 &900000110\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
         '  m_PrefabAsset: {fileID: 0}\n  m_GameObject: {fileID: %d}\n  m_Enabled: 1\n'
         '  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: %s, type: 3}\n'
         '  m_Name:\n  m_EditorClassIdentifier: Assembly-CSharp::HUD\n'
-        '  textoPedidos: {fileID: 900000118}\n  textoPerdidos: {fileID: 0}\n'
-        '  cartelMensaje: {fileID: 900000123}\n  textoMensaje: {fileID: 900000130}\n'
-        '  duracionMensaje: 2.5\n  rellenoProgreso: {fileID: 900000226}\n'
-        '  corazones:\n%s  corazonLleno: %s\n  corazonVacio: %s\n  textoPropinas: {fileID: 900000297}\n') % (
+        '  ordersText: {fileID: 900000118}\n  lostText: {fileID: 0}\n'
+        '  messageBox: {fileID: 900000123}\n  messageText: {fileID: 900000130}\n'
+        '  messageDuration: 2.5\n  progressFill: {fileID: 900000226}\n'
+        '  corazones:\n%s  fullHeart: %s\n  emptyHeart: %s\n  tipsText: {fileID: 900000297}\n') % (
     ROOT_GO, HUD_GUID, cor_imgs, spr('HUD/Corazon'), spr('HUD/CorazonVacio'))
 
 # ---------------------------------------------- panel de pausa (Esc)
@@ -259,7 +259,7 @@ def boton_pausa(padre, nombre, etiqueta, metodo, y):
           '    m_PressedTrigger: Pressed\n    m_SelectedTrigger: Selected\n    m_DisabledTrigger: Disabled\n'
           '  m_Interactable: 1\n  m_TargetGraphic: {fileID: %d}\n'
           '  m_OnClick:\n    m_PersistentCalls:\n      m_Calls:\n'
-          '      - m_Target: {fileID: %d}\n        m_TargetAssemblyTypeName: MenuPausa, Assembly-CSharp\n'
+          '      - m_Target: {fileID: %d}\n        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp\n'
           '        m_MethodName: %s\n        m_Mode: 1\n        m_Arguments:\n'
           '          m_ObjectArgument: {fileID: 0}\n'
           '          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine\n'
@@ -277,9 +277,9 @@ TIT_GO, TIT_RT, TIT_CR, TIT_TMP = nid(), nid(), nid(), nid()
 CTL_GO, CTL_RT, CTL_CR, CTL_TMP = nid(), nid(), nid(), nid()
 botones = []
 texto_botones = ''
-for nombre, etiqueta, metodo, y in (('BotonContinuar', 'Continuar', 'Continuar', 30),
-                                     ('BotonReiniciar', 'Reiniciar', 'Reiniciar', -80),
-                                     ('BotonMenu', 'Men\\xFA', 'IrAlMenu', -190)):
+for nombre, etiqueta, metodo, y in (('BotonContinuar', 'Continuar', 'Resume', 30),
+                                     ('BotonReiniciar', 'Reiniciar', 'Restart', -80),
+                                     ('BotonMenu', 'Men\\xFA', 'GoToMenu', -190)):
     r, s = boton_pausa(HOJA_RT, nombre, etiqueta, metodo, y)
     botones.append(r)
     texto_botones += s
@@ -331,16 +331,16 @@ out += ('--- !u!82 &900000301\nAudioSource:\n  m_ObjectHideFlags: 0\n'
         '  m_PlayOnAwake: 0\n  m_Volume: 1\n  m_Pitch: 1\n  Loop: 0\n  Mute: 0\n  Spatialize: 0\n'
         '  SpatializePostEffects: 0\n  Priority: 128\n  DopplerLevel: 1\n  MinDistance: 1\n  MaxDistance: 500\n'
         '  Pan2D: 0\n  rolloffMode: 0\n  BypassEffects: 0\n  BypassListenerEffects: 0\n  BypassReverbZones: 0\n') % ROOT_GO
-SONIDOS_GUID = open(os.path.join(ASSETS, 'Scripts', 'Sonidos.cs.meta')).read().split('guid: ')[1].split()[0]
-PAUSA_GUID = open(os.path.join(ASSETS, 'Scripts', 'MenuPausa.cs.meta')).read().split('guid: ')[1].split()[0]
+SONIDOS_GUID = open(os.path.join(ASSETS, 'Scripts', 'SoundEffects.cs.meta')).read().split('guid: ')[1].split()[0]
+PAUSA_GUID = open(os.path.join(ASSETS, 'Scripts', 'PauseMenu.cs.meta')).read().split('guid: ')[1].split()[0]
 out += ('--- !u!114 &900000302\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
         '  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n'
         '  m_PrefabAsset: {fileID: 0}\n  m_GameObject: {fileID: %d}\n  m_Enabled: 1\n'
         '  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: %s, type: 3}\n'
         '  m_Name:\n  m_EditorClassIdentifier: Assembly-CSharp::Sonidos\n'
-        '  sonidoAgarrar: %s\n  sonidoApoyar: %s\n  sonidoMaquinaLista: %s\n  sonidoEntregar: %s\n'
-        '  sonidoError: %s\n  sonidoTirar: %s\n  sonidoClienteEnojado: %s\n  sonidoVictoria: %s\n'
-        '  sonidoDerrota: %s\n  volumen: 0.7\n') % (
+        '  pickUpSound: %s\n  putDownSound: %s\n  machineReadySound: %s\n  deliverSound: %s\n'
+        '  errorSound: %s\n  throwSound: %s\n  angryCustomerSound: %s\n  victorySound: %s\n'
+        '  defeatSound: %s\n  volumen: 0.7\n') % (
     ROOT_GO, SONIDOS_GUID, clip('Agarrar'), clip('Apoyar'), clip('MaquinaLista'), clip('Entregar'),
     clip('Error'), clip('Tirar'), clip('ClienteEnojado'), clip('Victoria'), clip('Derrota'))
 out += ('--- !u!114 &900000303\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
@@ -348,7 +348,7 @@ out += ('--- !u!114 &900000303\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
         '  m_PrefabAsset: {fileID: 0}\n  m_GameObject: {fileID: %d}\n  m_Enabled: 1\n'
         '  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: %s, type: 3}\n'
         '  m_Name:\n  m_EditorClassIdentifier: Assembly-CSharp::MenuPausa\n'
-        '  panelPausa: {fileID: %d}\n') % (ROOT_GO, PAUSA_GUID, PAUSA_GO)
+        '  pausePanel: {fileID: %d}\n') % (ROOT_GO, PAUSA_GUID, PAUSA_GO)
 
 FLECHA_GUID = guids.setdefault('prefab/Flecha', uuid.uuid4().hex)
 out += ('--- !u!114 &900000201\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
@@ -356,9 +356,9 @@ out += ('--- !u!114 &900000201\nMonoBehaviour:\n  m_ObjectHideFlags: 0\n'
         '  m_PrefabAsset: {fileID: 0}\n  m_GameObject: {fileID: %d}\n  m_Enabled: 1\n'
         '  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: %s, type: 3}\n'
         '  m_Name:\n  m_EditorClassIdentifier: Assembly-CSharp::GuiaTutorial\n'
-        '  cartelTutorial: {fileID: 900000249}\n  textoTitulo: {fileID: 900000260}\n'
-        '  textoInstruccion: {fileID: 900000264}\n  imagenPedido: {fileID: 900000256}\n'
-        '  prefabFlecha: {fileID: 960100, guid: %s, type: 3}\n') % (
+        '  tutorialBox: {fileID: 900000249}\n  titleText: {fileID: 900000260}\n'
+        '  instructionText: {fileID: 900000264}\n  orderImage: {fileID: 900000256}\n'
+        '  arrowPrefab: {fileID: 960100, guid: %s, type: 3}\n') % (
     ROOT_GO, GUIA_GUID, FLECHA_GUID)
 
 open(HUDP, 'w', encoding='utf-8', newline='\n').write(out)

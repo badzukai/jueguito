@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122c608be06d438e835fa62c3fec437a, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::GloboObjeto
-  fondo: {fileID: 200300}
-  icono: {fileID: 300300}
-  transparenciaEnProceso: 0.5
+  background: {fileID: 200300}
+  icon: {fileID: 300300}
+  inProgressAlpha: 0.5
 --- !u!1 &200100
 GameObject:
   m_ObjectHideFlags: 0

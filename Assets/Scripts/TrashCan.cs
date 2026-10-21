@@ -2,30 +2,30 @@ using UnityEngine;
 
 // Tacho de basura: sirve para tirar lo que el barista lleva en la mano
 // (por ejemplo, si agarró un ingrediente equivocado).
-// Hereda de EstacionInteractiva, así que se usa con la tecla E.
-public class Tacho : EstacionInteractiva
+// Hereda de InteractiveStation, así que se usa con la tecla E.
+public class TrashCan : InteractiveStation
 {
     // Se ejecuta cuando el barista se acerca y presiona E.
-    public override void Interactuar(PlayerInventory inventario)
+    public override void Interact(PlayerInventory inventory)
     {
         // Si tiene las manos vacías, no hay nada para tirar.
-        if (!inventario.TieneObjeto())
+        if (!inventory.HasItem())
         {
-            Avisar("No tenés nada para tirar.");
+            Notify("No tenés nada para tirar.");
             return;
         }
 
         // Vaciamos la mano del barista.
-        inventario.SoltarObjeto();
+        inventory.DropItem();
 
-        Sonidos s = ObtenerSonidos();
+        SoundEffects s = GetSoundEffects();
 
         if (s != null)
         {
-            s.Tirar();
+            s.Throw();
         }
 
         // false: no es un error, así que no suena el "error".
-        Avisar("Lo tiraste a la basura.", false);
+        Notify("Lo tiraste a la basura.", false);
     }
 }

@@ -1,57 +1,57 @@
 using UnityEngine;
 
 // La moledora convierte los granos de café en café molido.
-// Hereda de EstacionInteractiva, así que se usa con la tecla E.
-public class MoledoraCafe : EstacionInteractiva
+// Hereda de InteractiveStation, así que se usa con la tecla E.
+public class CoffeeGrinder : InteractiveStation
 {
     // Segundos que tarda en moler el café.
-    [SerializeField] private float tiempoPreparacion = 3f;
+    [SerializeField] private float preparationTime = 3f;
 
     // Dónde aparece el globo respecto de la moledora.
-    [SerializeField] private Vector3 posicionGlobo = new Vector3(0f, 0.85f, 0f);
+    [SerializeField] private Vector3 bubblePosition = new Vector3(0f, 0.85f, 0f);
 
     // Indica si la moledora está trabajando.
-    private bool preparando = false;
+    private bool preparing = false;
 
     // Segundos que faltan para terminar de moler.
-    private float tiempoRestante = 0f;
+    private float timeRemaining = 0f;
 
     // Indica si hay café molido listo para retirar.
-    private bool cafeListo = false;
+    private bool coffeeReady = false;
 
     // Globo que muestra lo que hay adentro de la moledora.
-    private GloboObjeto globo;
+    private ItemBubble bubble;
 
     private void Start()
     {
         // Buscamos el catálogo de dibujos una sola vez y creamos el globo.
-        CatalogoObjetos catalogo = FindFirstObjectByType<CatalogoObjetos>();
+        ItemCatalog catalog = FindFirstObjectByType<ItemCatalog>();
 
-        if (catalogo != null)
+        if (catalog != null)
         {
-            globo = catalogo.CrearGlobo(transform, posicionGlobo, true);
+            bubble = catalog.CreateBubble(transform, bubblePosition, true);
         }
     }
 
     // Se ejecuta cuando el barista se acerca y presiona E.
-    public override void Interactuar(PlayerInventory inventario)
+    public override void Interact(PlayerInventory inventory)
     {
         // Si está trabajando, no podemos usarla.
-        if (preparando)
+        if (preparing)
         {
-            Avisar("La moledora está trabajando...");
+            Notify("La moledora está trabajando...");
             return;
         }
 
         // Si ya terminó, intentamos retirar el café molido.
-        if (cafeListo)
+        if (coffeeReady)
         {
             // Solo vaciamos la moledora si el barista pudo agarrarlo
             // (por ejemplo, no puede si tiene las manos ocupadas).
-            if (inventario.RecogerObjeto(PlayerInventory.TipoObjeto.CafeMolido))
+            if (inventory.PickUpItem(PlayerInventory.ItemType.GroundCoffee))
             {
-                cafeListo = false;
-                OcultarGlobo();
+                coffeeReady = false;
+                HideBubble();
 
                 Debug.Log("Retiraste el café molido.");
             }
@@ -60,23 +60,23 @@ public class MoledoraCafe : EstacionInteractiva
         }
 
         // Si está vacía, comprobamos que el barista traiga granos de café.
-        if (inventario.ObtenerObjetoActual() == PlayerInventory.TipoObjeto.Cafe)
+        if (inventory.GetCurrentItem() == PlayerInventory.ItemType.CoffeeBeans)
         {
             // Los granos pasan de la mano a la moledora.
-            inventario.SoltarObjeto();
+            inventory.DropItem();
 
             // Empezamos a contar el tiempo de molienda.
-            preparando = true;
-            tiempoRestante = tiempoPreparacion;
+            preparing = true;
+            timeRemaining = preparationTime;
 
             // Mostramos los granos medio transparentes: se están moliendo.
-            MostrarEnGlobo(PlayerInventory.TipoObjeto.Cafe, false);
+            ShowInBubble(PlayerInventory.ItemType.CoffeeBeans, false);
 
             Debug.Log("Moliendo café...");
         }
         else
         {
-            Avisar("La moledora necesita granos de café.");
+            Notify("La moledora necesita granos de café.");
         }
     }
 
@@ -86,50 +86,50 @@ public class MoledoraCafe : EstacionInteractiva
     private void Update()
     {
         // Si no está moliendo, no hay nada que contar.
-        if (!preparando)
+        if (!preparing)
         {
             return;
         }
 
         // Time.deltaTime es el tiempo que pasó desde el último frame.
-        tiempoRestante -= Time.deltaTime;
+        timeRemaining -= Time.deltaTime;
 
         // Cuando el tiempo llega a cero, el café está listo.
-        if (tiempoRestante <= 0f)
+        if (timeRemaining <= 0f)
         {
-            preparando = false;
-            cafeListo = true;
+            preparing = false;
+            coffeeReady = true;
 
             // Ahora mostramos el café molido, bien visible.
-            MostrarEnGlobo(PlayerInventory.TipoObjeto.CafeMolido, true);
+            ShowInBubble(PlayerInventory.ItemType.GroundCoffee, true);
 
             Debug.Log("¡Café molido listo!");
 
             // Sonido de "¡listo!".
-            Sonidos s = ObtenerSonidos();
+            SoundEffects s = GetSoundEffects();
 
             if (s != null)
             {
-                s.MaquinaLista();
+                s.MachineReady();
             }
         }
     }
 
     // Muestra un objeto en el globo de la moledora (si el globo existe).
-    private void MostrarEnGlobo(PlayerInventory.TipoObjeto objeto, bool listo)
+    private void ShowInBubble(PlayerInventory.ItemType item, bool ready)
     {
-        if (globo != null)
+        if (bubble != null)
         {
-            globo.Mostrar(objeto, listo);
+            bubble.Show(item, ready);
         }
     }
 
     // Oculta el globo de la moledora (si el globo existe).
-    private void OcultarGlobo()
+    private void HideBubble()
     {
-        if (globo != null)
+        if (bubble != null)
         {
-            globo.Ocultar();
+            bubble.Hide();
         }
     }
 
@@ -138,14 +138,14 @@ public class MoledoraCafe : EstacionInteractiva
     // preguntar cómo está la moledora sin poder cambiarla.
 
     // Devuelve true mientras la moledora está moliendo.
-    public bool EstaMoliendo()
+    public bool IsGrinding()
     {
-        return preparando;
+        return preparing;
     }
 
     // Devuelve true si hay café molido listo para retirar.
-    public bool TieneCafeListo()
+    public bool HasCoffeeReady()
     {
-        return cafeListo;
+        return coffeeReady;
     }
 }

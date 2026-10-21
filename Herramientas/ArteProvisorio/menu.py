@@ -131,7 +131,7 @@ def texto(rt, t, tam, color='#2B1D16', estilo=0, h=2, vert=512, minimo=None, mat
 def boton(rt, grafico, metodo, argumento=None):
     f = nid()
     modo = 5 if argumento is not None else 1
-    llamada = ('      - m_Target: {fileID: %s}\n        m_TargetAssemblyTypeName: MenuPrincipal, Assembly-CSharp\n'
+    llamada = ('      - m_Target: {fileID: %s}\n        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp\n'
                '        m_MethodName: %s\n        m_Mode: %d\n        m_Arguments:\n'
                '          m_ObjectArgument: {fileID: 0}\n'
                '          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine\n'
@@ -209,10 +209,10 @@ t = nodo('Titulo', cartel, amin=(0, 0), amax=(1, 1), pos=(0, 22), size=(-60, -90
 texto(t, 'Barista Caótico', 130, AMARILLO, estilo=1, material=OUTLINE, wrap=0, minimo=60)
 t = nodo('Subtitulo', cartel, amin=(0, 0), amax=(1, 0), pos=(0, 52), size=(-80, 60), pivot=(0.5, 0.5))
 texto(t, '¡Que no se enfríe el café!', 40, CREMA, estilo=2, material=SOMBRA, wrap=0)
-for k, (n, etq, met, arg) in enumerate([('BotonJugar', 'Jugar', 'CargarEscena', 'Cafeteria'),
-                                        ('BotonComoJugar', 'Cómo jugar', 'MostrarComoJugar', None),
-                                        ('BotonCreditos', 'Créditos', 'MostrarCreditos', None),
-                                        ('BotonSalir', 'Salir', 'Salir', None)]):
+for k, (n, etq, met, arg) in enumerate([('BotonJugar', 'Jugar', 'LoadSceneByName', 'Cafeteria'),
+                                        ('BotonComoJugar', 'Cómo jugar', 'ShowHowToPlay', None),
+                                        ('BotonCreditos', 'Créditos', 'ShowCredits', None),
+                                        ('BotonSalir', 'Salir', 'Exit', None)]):
     boton_rojo(n, pp, (0, -10 - k * 118), (540, 100), etq, met, arg)
 
 # ------------------------------------------------------ cómo jugar
@@ -294,11 +294,11 @@ for k, (imgs, desc) in enumerate(reglas):
     etiqueta_texto(p3, desc, 290, y, 1170, 96, 32)
 
 # barra de abajo: anterior / página / siguiente / volver
-boton_rojo('BotonAnterior', hoja, (-300, 60), (260, 84), 'Anterior', 'AnteriorPagina', tam=36, amin=(0.5, 0))
+boton_rojo('BotonAnterior', hoja, (-300, 60), (260, 84), 'Anterior', 'PreviousPage', tam=36, amin=(0.5, 0))
 tp = nodo('TextoPagina', hoja, amin=(0.5, 0), pos=(0, 60), size=(200, 60))
 texto_pagina = texto(tp, '1 / 3', 38, '#5A3018', estilo=1, wrap=0)
-boton_rojo('BotonSiguiente', hoja, (300, 60), (260, 84), 'Siguiente', 'SiguientePagina', tam=36, amin=(0.5, 0))
-boton_rojo('BotonVolver', hoja, (-170, 60), (240, 84), 'Volver', 'VolverAlMenu', tam=36, amin=(1, 0))
+boton_rojo('BotonSiguiente', hoja, (300, 60), (260, 84), 'Siguiente', 'NextPage', tam=36, amin=(0.5, 0))
+boton_rojo('BotonVolver', hoja, (-170, 60), (240, 84), 'Volver', 'BackToMenu', tam=36, amin=(1, 0))
 
 # ---------------------------------------------------------- créditos
 pk = nodo('PanelCreditos', CANVAS_RT, amin=(0, 0), amax=(1, 1), size=(0, 0), activo=0)
@@ -308,7 +308,7 @@ t = nodo('Titulo', hoja2, amin=(0.5, 1), pos=(0, -30), size=(800, 80), pivot=(0.
 texto(t, 'Créditos', 64, '#5A3018', estilo=1, wrap=0)
 t = nodo('Texto', hoja2, amin=(0, 0), amax=(1, 1), pos=(0, -10), size=(-120, -280))
 texto(t, 'Desarrollo y arte\n<b>Helena Trindade</b>\n\nProgramación de Videojuegos 1\nT.U. en Videojuegos - UTN\n2026', 38, TINTA)
-boton_rojo('BotonVolver', hoja2, (0, 60), (260, 84), 'Volver', 'VolverAlMenu', tam=36, amin=(0.5, 0))
+boton_rojo('BotonVolver', hoja2, (0, 60), (260, 84), 'Volver', 'BackToMenu', tam=36, amin=(0.5, 0))
 
 # --------------------------------------------------- armar el archivo
 salida_docs = []
@@ -351,13 +351,13 @@ for d in docs:
     if fid == CANVAS_RT:
         d = re.sub(r'  m_Children:\n(  - \{fileID: \d+\}\n)+', '  m_Children:\n' + ''.join('  - {fileID: %d}\n' % c for c in raiz_hijos), d)
     if fid == MENU_MB:
-        d = re.sub(r'  panelPrincipal: .*', '  panelPrincipal: {fileID: %d}' % nodos[pp]['go'], d)
-        d = re.sub(r'  panelComoJugar: .*', '  panelComoJugar: {fileID: %d}' % nodos[pc]['go'], d)
-        d = re.sub(r'  panelCreditos: .*', '  panelCreditos: {fileID: %d}' % nodos[pk]['go'], d)
-        d = re.sub(r'\n  paginasComoJugar:(\n  - .*)*', '', d)
-        d = re.sub(r'\n  textoPagina: .*', '', d)
-        d = d.rstrip('\n') + '\n  paginasComoJugar:\n' + ''.join('  - {fileID: %d}\n' % nodos[p]['go'] for p in paginas)
-        d += '  textoPagina: {fileID: %d}' % texto_pagina
+        d = re.sub(r'  mainPanel: .*', '  mainPanel: {fileID: %d}' % nodos[pp]['go'], d)
+        d = re.sub(r'  howToPlayPanel: .*', '  howToPlayPanel: {fileID: %d}' % nodos[pc]['go'], d)
+        d = re.sub(r'  creditsPanel: .*', '  creditsPanel: {fileID: %d}' % nodos[pk]['go'], d)
+        d = re.sub(r'\n  howToPlayPages:(\n  - .*)*', '', d)
+        d = re.sub(r'\n  pageText: .*', '', d)
+        d = d.rstrip('\n') + '\n  howToPlayPages:\n' + ''.join('  - {fileID: %d}\n' % nodos[p]['go'] for p in paginas)
+        d += '  pageText: {fileID: %d}' % texto_pagina
     nuevos.append(d.rstrip('\n'))
 # La UI nueva va antes de la cámara (y SceneRoots queda al final).
 i_cam = next(i for i, d in enumerate(nuevos) if '&900000095' in d.split('\n')[0])

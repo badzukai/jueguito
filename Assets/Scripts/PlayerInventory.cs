@@ -11,40 +11,40 @@ public class PlayerInventory : MonoBehaviour
     // (Ninguno = 0, Cafe = 1, Leche = 2, etc.).
     // Por eso NO conviene cambiar el orden de esta lista:
     // los valores guardados en la escena cambiarían de significado.
-    public enum TipoObjeto
+    public enum ItemType
     {
-        Ninguno,                    // Manos vacías.
-        Cafe,                       // Granos de café (ingrediente).
-        Leche,                      // Leche (ingrediente).
+        None,                    // Manos vacías.
+        CoffeeBeans,                       // Granos de café (ingrediente).
+        Milk,                      // Leche (ingrediente).
         Chocolate,                  // Chocolate (ingrediente).
-        CafeMolido,                 // Sale de la moledora.
-        CafePreparado,              // Sale de la cafetera.
-        LecheEspumada,              // Sale de la cafetera al poner leche.
-        ChocolatePreparado,         // Sale de la chocolatera.
-        CafeConLeche,               // Café + leche espumada, combinados en la repisa.
-        ChocolateConLeche,          // Chocolate + leche espumada, combinados en la repisa.
-        GalletitaRedVelvet,         // Sale de la estación de galletitas (tecla Z).
-        GalletitaVainillaChocolate, // Sale de la estación de galletitas (tecla X).
-        GalletitaChocolate          // Sale de la estación de galletitas (tecla C).
+        GroundCoffee,                 // Sale de la moledora.
+        Coffee,              // Sale de la cafetera.
+        FoamedMilk,              // Sale de la cafetera al poner leche.
+        HotChocolate,         // Sale de la chocolatera.
+        CoffeeWithMilk,               // Café + leche espumada, combinados en la repisa.
+        ChocolateWithMilk,          // Chocolate + leche espumada, combinados en la repisa.
+        RedVelvetCookie,         // Sale de la estación de galletitas (tecla Z).
+        VanillaChocolateCookie, // Sale de la estación de galletitas (tecla X).
+        ChocolateCookie          // Sale de la estación de galletitas (tecla C).
         // Los objetos nuevos se agregan SIEMPRE al final de la lista.
     }
 
     // Objeto que el barista tiene en la mano en este momento.
     // Es privado, pero con [SerializeField] lo vemos en el Inspector,
     // lo que sirve para comprobar qué lleva mientras probamos el juego.
-    [SerializeField] private TipoObjeto objetoActual = TipoObjeto.Ninguno;
+    [SerializeField] private ItemType currentItem = ItemType.None;
 
     // Dónde aparece el globo respecto del barista (arriba de su cabeza).
-    [SerializeField] private Vector3 posicionGlobo = new Vector3(0f, 0.7f, 0f);
+    [SerializeField] private Vector3 bubblePosition = new Vector3(0f, 0.7f, 0f);
 
     // Globo que muestra lo que lleva el barista en la mano.
-    private GloboObjeto globo;
+    private ItemBubble bubble;
 
     // HUD, para mostrar mensajes en pantalla.
     private HUD hud;
 
     // Sonidos del juego (agarrar y apoyar cosas).
-    private Sonidos sonidos;
+    private SoundEffects soundEffects;
 
     private void Start()
     {
@@ -52,11 +52,11 @@ public class PlayerInventory : MonoBehaviour
         // FindFirstObjectByType es la versión nueva de FindObjectOfType:
         // busca el primer objeto con ese componente. Es lento,
         // por eso lo usamos una sola vez, en Start.
-        CatalogoObjetos catalogo = FindFirstObjectByType<CatalogoObjetos>();
+        ItemCatalog catalog = FindFirstObjectByType<ItemCatalog>();
 
-        if (catalogo != null)
+        if (catalog != null)
         {
-            globo = catalogo.CrearGlobo(transform, posicionGlobo, true);
+            bubble = catalog.CreateBubble(transform, bubblePosition, true);
         }
         else
         {
@@ -65,76 +65,76 @@ public class PlayerInventory : MonoBehaviour
 
         // También buscamos el HUD y los sonidos una sola vez.
         hud = FindFirstObjectByType<HUD>();
-        sonidos = FindFirstObjectByType<Sonidos>();
+        soundEffects = FindFirstObjectByType<SoundEffects>();
     }
 
     // Muestra en el globo lo que lleva el barista.
     // Si tiene las manos vacías, el globo se oculta solo.
-    private void ActualizarGlobo()
+    private void UpdateBubble()
     {
-        if (globo != null)
+        if (bubble != null)
         {
-            globo.Mostrar(objetoActual);
+            bubble.Show(currentItem);
         }
     }
 
     // Devuelve el objeto que lleva el barista.
     // Otros scripts pueden consultarlo, pero no cambiarlo directamente:
-    // para eso tienen que usar RecogerObjeto() o SoltarObjeto().
-    public TipoObjeto ObtenerObjetoActual()
+    // para eso tienen que usar PickUpItem() o DropItem().
+    public ItemType GetCurrentItem()
     {
-        return objetoActual;
+        return currentItem;
     }
 
     // Devuelve true si el barista tiene algo en la mano.
-    public bool TieneObjeto()
+    public bool HasItem()
     {
-        return objetoActual != TipoObjeto.Ninguno;
+        return currentItem != ItemType.None;
     }
 
     // Intenta poner un objeto en la mano del barista.
     // Devuelve true si pudo recogerlo y false si ya tenía algo.
-    public bool RecogerObjeto(TipoObjeto nuevoObjeto)
+    public bool PickUpItem(ItemType newItem)
     {
         // Si ya tiene las manos ocupadas, no puede agarrar otra cosa.
-        if (TieneObjeto())
+        if (HasItem())
         {
             Debug.Log("Ya tenés un objeto en la mano.");
 
             if (hud != null)
             {
-                hud.MostrarMensaje("Ya tenés algo en la mano. Dejalo en una repisa o tiralo al tacho.");
+                hud.ShowMessage("Ya tenés algo en la mano. Dejalo en una repisa o tiralo al tacho.");
             }
 
-            if (sonidos != null)
+            if (soundEffects != null)
             {
-                sonidos.Error();
+                soundEffects.Error();
             }
 
             return false;
         }
 
-        objetoActual = nuevoObjeto;
-        ActualizarGlobo();
+        currentItem = newItem;
+        UpdateBubble();
 
-        if (sonidos != null)
+        if (soundEffects != null)
         {
-            sonidos.Agarrar();
+            soundEffects.PickUp();
         }
 
-        Debug.Log("Recogiste: " + objetoActual);
+        Debug.Log("Recogiste: " + currentItem);
         return true;
     }
 
     // Deja las manos del barista vacías.
-    public void SoltarObjeto()
+    public void DropItem()
     {
-        objetoActual = TipoObjeto.Ninguno;
-        ActualizarGlobo();
+        currentItem = ItemType.None;
+        UpdateBubble();
 
-        if (sonidos != null)
+        if (soundEffects != null)
         {
-            sonidos.Apoyar();
+            soundEffects.PutDown();
         }
     }
 }

@@ -97,15 +97,15 @@ for n, x, script in (('Moledora', -4.75, 'MoledoraCafe'), ('Cafetera', 0, 'Cafet
     mover(n, x, -2.5)
     sprite(n, 'Escenario/' + n, 84, 80, 3)
     caja(n, 2.625, 2.5, 0, -1.25)
-    campo(n, script, 'posicionGlobo', '{x: 0, y: -0.3, z: 0}')
+    campo(n, script, 'bubblePosition', '{x: 0, y: -0.3, z: 0}')
 
 for n, x in (('RepisaIzquierda', -2.35), ('RepisaDerecha', 2.35)):
     mover(n, x, -2.5)
     sprite(n, 'Escenario/Repisa', 58, 80, 3)
     caja(n, 1.8125, 2.5, 0, -1.25)
     r = comp(n, '114', gs('Repisa'))
-    d2, k = re.subn(r'posicionesEspacios:\n  - \{.*?\}\n  - \{.*?\}',
-                    'posicionesEspacios:\n  - {x: -0.41, y: -0.85, z: 0}\n  - {x: 0.41, y: -0.85, z: 0}', docs[idx[r]])
+    d2, k = re.subn(r'slotPositions:\n  - \{.*?\}\n  - \{.*?\}',
+                    'slotPositions:\n  - {x: -0.41, y: -0.85, z: 0}\n  - {x: 0.41, y: -0.85, z: 0}', docs[idx[r]])
     assert k == 1
     docs[idx[r]] = d2
 

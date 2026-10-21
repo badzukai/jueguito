@@ -1,0 +1,528 @@
+<title>Machete Barista Caótico</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: índice fijo a la izquierda (en compu) + columna de lectura; en el celu, una sola columna. */
+:root {
+  --bg: #f5f4ef;
+  --papel: #fffefa;
+  --tinta: #2b211c;
+  --suave: #6b5d54;
+  --linea: #ddd6cb;
+  --acento: #2c7a6b;
+  --acento-fondo: #e2f0ec;
+  --cafe: #8a4b2a;
+  --cafe-fondo: #f4e7dc;
+  --codigo-fondo: #2b211c;
+  --codigo-tinta: #f3ece2;
+  --f-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Literata", Georgia, "Times New Roman", serif;
+  --f-codigo: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1714; --papel: #231e1a; --tinta: #efe7dd; --suave: #b4a597; --linea: #3d342d;
+    --acento: #6cc4b0; --acento-fondo: #1f3a34; --cafe: #e0a27c; --cafe-fondo: #3a2a20;
+    --codigo-fondo: #120f0d; --codigo-tinta: #f3ece2; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1714; --papel: #231e1a; --tinta: #efe7dd; --suave: #b4a597; --linea: #3d342d;
+  --acento: #6cc4b0; --acento-fondo: #1f3a34; --cafe: #e0a27c; --cafe-fondo: #3a2a20;
+  --codigo-fondo: #120f0d; --codigo-tinta: #f3ece2; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--tinta);
+  font-family: var(--f-texto); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.marco { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-block: 40px 80px; }
+nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-family: var(--f-titulo); font-size: 14px; }
+nav p { margin: 0 0 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; color: var(--suave); }
+nav ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav a { display: block; padding: 4px 10px; border-radius: 6px; color: var(--tinta); text-decoration: none; }
+nav a:hover, nav a:focus-visible { background: var(--acento-fondo); color: var(--acento); outline: none; }
+main { min-width: 0; max-width: 720px; }
+header.tapa { padding-bottom: 28px; border-bottom: 2px solid var(--tinta); margin-bottom: 36px; }
+.eyebrow { font-family: var(--f-titulo); font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--acento); margin: 0 0 8px; }
+h1 { font-family: var(--f-titulo); font-weight: 800; font-size: clamp(34px, 6vw, 52px); line-height: 1.05; margin: 0 0 14px; text-wrap: balance; }
+h2 { font-family: var(--f-titulo); font-weight: 800; font-size: 28px; line-height: 1.15; margin: 56px 0 14px; text-wrap: balance; scroll-margin-top: 20px; }
+h3 { font-family: var(--f-titulo); font-weight: 600; font-size: 20px; margin: 30px 0 8px; text-wrap: balance; }
+p, li { max-width: 66ch; }
+.bajada { font-size: 19px; color: var(--suave); margin: 0; }
+a { color: var(--acento); }
+code { font-family: var(--f-codigo); font-size: .86em; background: var(--cafe-fondo); color: var(--cafe); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--codigo-fondo); color: var(--codigo-tinta); font-family: var(--f-codigo); font-size: 14px; line-height: 1.55; padding: 16px 18px; border-radius: 8px; overflow-x: auto; margin: 14px 0 18px; }
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+pre .c { color: #a8b8a0; }
+.decilo { background: var(--acento-fondo); border-left: 4px solid var(--acento); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+.decilo b { font-family: var(--f-titulo); color: var(--acento); display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+.decilo p { margin: 0; }
+.tabla { overflow-x: auto; margin: 14px 0 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; background: var(--papel); }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+th { font-family: var(--f-titulo); font-weight: 600; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--suave); border-bottom: 2px solid var(--tinta); }
+td code { white-space: nowrap; }
+.receta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.receta div { background: var(--papel); border: 1px solid var(--linea); border-radius: 8px; padding: 12px 14px; font-size: 15px; }
+.receta strong { font-family: var(--f-titulo); display: block; margin-bottom: 4px; }
+.flecha { color: var(--acento); font-weight: 600; }
+ol.pasos { padding-left: 1.3em; }
+ol.pasos li { margin-bottom: 10px; }
+details { background: var(--papel); border: 1px solid var(--linea); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+summary { cursor: pointer; font-family: var(--f-titulo); font-weight: 600; }
+summary:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+details p { margin: 8px 0 4px; }
+.mermaid { background: var(--papel); border: 1px solid var(--linea); border-radius: 8px; padding: 12px; overflow-x: auto; }
+footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--linea); color: var(--suave); font-size: 14px; }
+@media (max-width: 860px) {
+  .marco { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-block: 24px 60px; }
+  nav { position: static; }
+  nav ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+
+<div class="marco">
+<nav aria-label="Índice">
+  <p>Índice</p>
+  <ol>
+    <li><a href="#juego">El juego en 1 minuto</a></li>
+    <li><a href="#scripts">Mapa de scripts</a></li>
+    <li><a href="#inventario">El inventario</a></li>
+    <li><a href="#ingredientes">Agarrar ingredientes</a></li>
+    <li><a href="#tecla-e">Cómo funciona la E</a></li>
+    <li><a href="#maquinas">Las máquinas</a></li>
+    <li><a href="#repisa">La repisa</a></li>
+    <li><a href="#bandeja">Las bandejas</a></li>
+    <li><a href="#clientes">Los clientes</a></li>
+    <li><a href="#gamemanager">GameManager</a></li>
+    <li><a href="#tutorial">La guía del tutorial</a></li>
+    <li><a href="#resto">HUD, pausa, sonido, menú</a></li>
+    <li><a href="#pedido">Un pedido de punta a punta</a></li>
+    <li><a href="#preguntas">Preguntas de la defensa</a></li>
+    <li><a href="#video">Guion para el video</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="tapa">
+  <p class="eyebrow">Programación de Videojuegos 1 · UTN</p>
+  <h1>Barista Caótico: cómo funciona por dentro</h1>
+  <p class="bajada">Machete para grabar el video y defender el código. Cada sección explica qué hace una parte del juego, qué script la maneja y qué tema de la materia usa.</p>
+</header>
+
+<section id="juego">
+<h2>El juego en 1 minuto</h2>
+<p>Es una cafetería vista desde arriba. Manejás al barista con las flechas o WASD y preparás bebidas para los clientes que llegan al mostrador. Cada cliente tiene su <b>bandeja</b>: ahí se arma el pedido (bebida y, a veces, galletita) y se entrega.</p>
+<div class="tabla"><table>
+  <tr><th>Tecla</th><th>Qué hace</th></tr>
+  <tr><td>Flechas / WASD</td><td>Mover al barista</td></tr>
+  <tr><td>Z · X · C</td><td>Agarrar de las despensas: café en grano, leche o chocolate; o una de las tres galletitas</td></tr>
+  <tr><td>E</td><td>Usar la estación más cercana (máquinas, repisas, bandejas, tacho)</td></tr>
+  <tr><td>R</td><td>Sacar un producto de la bandeja (si te equivocaste)</td></tr>
+  <tr><td>Esc</td><td>Pausa</td></tr>
+</table></div>
+<h3>Recetas</h3>
+<div class="receta">
+  <div><strong>Café</strong>Granos <span class="flecha">→</span> moledora <span class="flecha">→</span> café molido <span class="flecha">→</span> cafetera <span class="flecha">→</span> café</div>
+  <div><strong>Leche espumada</strong>Leche <span class="flecha">→</span> cafetera</div>
+  <div><strong>Chocolate</strong>Chocolate <span class="flecha">→</span> chocolatera</div>
+  <div><strong>Con leche</strong>Café o chocolate + leche espumada, juntos en una <b>repisa</b></div>
+</div>
+<h3>Cómo se gana y cómo se pierde</h3>
+<ul>
+  <li><b>Tutorial:</b> 3 pedidos fijos (café, café con leche, chocolate), un cliente distinto cada vez, sin paciencia y con una guía paso a paso arriba.</li>
+  <li><b>Partida normal:</b> vuelven dos clientes con pedidos al azar y con paciencia. A los 12 pedidos se abre un tercer puesto.</li>
+  <li><b>Ganás</b> al entregar 15 pedidos. <b>Perdés</b> si se te van 3 clientes enojados.</li>
+  <li>Al terminar, el juego se congela con <code>Time.timeScale = 0</code> y aparece un cartel con el resumen.</li>
+</ul>
+<p>Estos números se cambian en el Inspector del GameManager (<code>ordersToWin</code>, <code>ordersForThirdCustomer</code>, <code>maxLostCustomers</code>), sin tocar código.</p>
+</section>
+
+<section id="scripts">
+<h2>Mapa de scripts</h2>
+<p>Hay 23 scripts en <code>Assets/Scripts</code>. Agrupados por lo que hacen:</p>
+<div class="tabla"><table>
+  <tr><th>Grupo</th><th>Scripts</th><th>Para qué</th></tr>
+  <tr><td>Barista</td><td><code>PlayerMovement</code> · <code>PlayerInventory</code> · <code>PlayerInteraction</code></td><td>Moverse y animarse · qué tiene en la mano · usar estaciones con E y R</td></tr>
+  <tr><td>Estaciones con E</td><td><code>InteractiveStation</code> (base) · <code>CoffeeGrinder</code> · <code>CoffeeMachine</code> · <code>ChocolateMachine</code> · <code>Shelf</code> · <code>Tray</code> · <code>TrashCan</code></td><td>Todas heredan de la base y tienen su propio <code>Interact</code></td></tr>
+  <tr><td>Despensas</td><td><code>IngredientStation</code> · <code>CookieStation</code></td><td>Dan objetos con Z, X y C</td></tr>
+  <tr><td>Clientes</td><td><code>Customer</code> · <code>CustomerMovement</code></td><td>Pedido, paciencia · caminar de la puerta al mostrador</td></tr>
+  <tr><td>Reglas</td><td><code>GameManager</code> · <code>TutorialGuide</code></td><td>Tutorial, pedidos al azar, propinas, ganar y perder · la guía paso a paso</td></tr>
+  <tr><td>Dibujos</td><td><code>ItemCatalog</code> · <code>ItemBubble</code> · <code>OrderBubble</code></td><td>El sprite de cada objeto y los globitos</td></tr>
+  <tr><td>Interfaz</td><td><code>HUD</code> · <code>PauseMenu</code> · <code>MainMenu</code> · <code>SoundEffects</code></td><td>Barra de arriba y mensajes · pausa · menú · efectos de sonido</td></tr>
+</table></div>
+</section>
+
+<section id="inventario">
+<h2>El inventario: qué tiene el barista en la mano</h2>
+<p><b>Script:</b> <code>PlayerInventory</code>, en el objeto Player.</p>
+<h3>El enum ItemType: el idioma común del juego</h3>
+<p>Todos los objetos del juego están en una sola lista con nombre, un <code>enum</code>:</p>
+<pre><code>public enum ItemType
+{
+    None, CoffeeBeans, Milk, Chocolate,
+    GroundCoffee, Coffee, FoamedMilk, HotChocolate,
+    CoffeeWithMilk, ChocolateWithMilk,
+    RedVelvetCookie, VanillaChocolateCookie, ChocolateCookie
+}</code></pre>
+<p>Así es como <b>el código diferencia cada cosa</b>. La mano del barista, las máquinas, las repisas, las bandejas y los pedidos guardan un <code>ItemType</code>. Comparar es tan simple como <code>item == PlayerInventory.ItemType.Milk</code>.</p>
+<div class="decilo"><b>Para decir en la defensa</b><p>Un enum es una lista de opciones con nombre. Por dentro Unity las guarda como números (None = 0, CoffeeBeans = 1…). Lo usé en lugar de strings porque si escribo mal un nombre el código no compila, mientras que con un string el error pasaría sin que me dé cuenta. Por eso los valores nuevos se agregan siempre al final: si cambio el orden, lo guardado en la escena cambia de significado.</p></div>
+<h3>Una sola variable y dos funciones</h3>
+<pre><code>[SerializeField] private ItemType currentItem = ItemType.None;
+
+public bool PickUpItem(ItemType newItem)
+{
+    if (HasItem())          <span class="c">// ya tiene algo: no puede agarrar otra cosa</span>
+    {
+        hud.ShowMessage("Ya tenés algo en la mano...");
+        return false;
+    }
+    currentItem = newItem;
+    UpdateBubble();          <span class="c">// el globito arriba del barista muestra el objeto</span>
+    return true;
+}
+
+public void DropItem()
+{
+    currentItem = ItemType.None;
+    UpdateBubble();
+}</code></pre>
+<ul>
+  <li>El barista lleva <b>un solo objeto</b>. <code>None</code> significa manos vacías.</li>
+  <li><code>currentItem</code> es <code>private</code>: otros scripts lo leen con <code>GetCurrentItem()</code> y lo cambian solamente con <code>PickUpItem</code> o <code>DropItem</code>. Así nadie lo pisa por error.</li>
+  <li><code>PickUpItem</code> devuelve <code>bool</code>: las máquinas lo usan para vaciarse <i>solo si</i> el barista pudo agarrar el producto.</li>
+  <li><code>[SerializeField]</code> permite ver lo que tiene en la mano en el Inspector mientras jugás.</li>
+</ul>
+</section>
+
+<section id="ingredientes">
+<h2>Agarrar ingredientes y galletitas</h2>
+<p><b>Scripts:</b> <code>IngredientStation</code> y <code>CookieStation</code> (son iguales, cambian los objetos que entregan).</p>
+<ol class="pasos">
+  <li>En cada <code>Update</code> la despensa mide la distancia al barista con <code>Vector2.Distance</code>. Si está a menos de <code>interactionDistance</code>, se pinta de amarillo (resaltado).</li>
+  <li>Lee las teclas con <code>Input.GetKeyDown</code>, y cada tecla corresponde a un ingrediente:
+<pre><code>if (Input.GetKeyDown(KeyCode.Z))      GiveIngredient(ItemType.CoffeeBeans);
+else if (Input.GetKeyDown(KeyCode.X)) GiveIngredient(ItemType.Milk);
+else if (Input.GetKeyDown(KeyCode.C)) GiveIngredient(ItemType.Chocolate);</code></pre></li>
+  <li><code>GiveIngredient</code> vuelve a chequear la distancia y llama a <code>inventory.PickUpItem(...)</code>. Si el barista ya tiene algo, el inventario lo rechaza y muestra el aviso.</li>
+</ol>
+<p>Galletitas: Z red velvet, X vainilla con chocolate, C chocolate.</p>
+<div class="decilo"><b>¿Por qué no usan la E?</b><p>Las despensas tienen tres cosas, así que cada una necesita su tecla. Por eso no heredan de <code>InteractiveStation</code>: no tienen un único <code>Interact</code>. Además, si el juego está en pausa (<code>Time.timeScale == 0</code>), no hacen nada.</p></div>
+</section>
+
+<section id="tecla-e">
+<h2>Cómo funciona la E: herencia y la estación más cercana</h2>
+<p><b>Scripts:</b> <code>InteractiveStation</code> (clase base) y <code>PlayerInteraction</code> (en el Player).</p>
+<h3>La herencia</h3>
+<p>Moledora, cafetera, chocolatera, repisa, bandeja y tacho <b>heredan</b> de <code>InteractiveStation</code>:</p>
+<pre><code>public class InteractiveStation : MonoBehaviour
+{
+    public virtual void Interact(PlayerInventory inventory) { ... }
+    protected void Notify(string message, bool isError = true) { ... }
+}
+
+public class CoffeeMachine : InteractiveStation
+{
+    public override void Interact(PlayerInventory inventory) { <span class="c">/* lo suyo */</span> }
+}</code></pre>
+<ul>
+  <li><code>virtual</code> en la base significa "cada estación puede reemplazar esta función". Cada estación la reemplaza con <code>override</code>.</li>
+  <li>Gracias a eso, el barista no necesita saber qué estación tiene adelante: llama a <code>station.Interact(inventory)</code> y cada una reacciona a su manera.</li>
+  <li><code>protected Notify(...)</code> se escribe una sola vez en la base y la usan todas las hijas. Muestra el mensaje en el HUD y hace sonar el error. <code>isError</code> es un <b>parámetro opcional</b>: el tacho pasa <code>false</code> porque tirar algo no es un error.</li>
+</ul>
+<div class="decilo"><b>Para decir en la defensa</b><p>Es la misma idea que MonoBehaviour: todos mis scripts heredan de MonoBehaviour y por eso tienen Start y Update. Mis estaciones heredan de InteractiveStation y por eso todas tienen Interact.</p></div>
+<h3>Encontrar la estación más cercana</h3>
+<ol class="pasos">
+  <li>En <code>Start</code>, una sola vez, <code>FindObjectsByType&lt;InteractiveStation&gt;</code> junta todas las estaciones en un <b>array</b> (incluidas las desactivadas, como las bandejas de clientes que todavía no llegaron). Buscar es lento, por eso no se hace en cada frame.</li>
+  <li>Se arman <b>arrays paralelos</b>: en la posición <code>i</code> de <code>drawings[]</code> está el SpriteRenderer de la estación <code>i</code>, y en <code>colliders[]</code>, su collider.</li>
+  <li><code>FindNearestIndex</code> recorre el array con un <code>for</code>, como un "buscar el mínimo":
+<pre><code>float shortestDistance = reach;              <span class="c">// 0.8: más lejos no cuenta</span>
+for (int i = 0; i &lt; stations.Length; i++)
+{
+    if (!stations[i].gameObject.activeInHierarchy) continue;   <span class="c">// ocultas: no</span>
+
+    Vector2 point = stations[i].transform.position;
+    if (colliders[i] != null)
+        point = colliders[i].ClosestPoint(transform.position);   <span class="c">// borde más cercano</span>
+
+    float distance = Vector2.Distance(transform.position, point);
+    if (colliders[i] == null) distance = distance - radiusWithoutCollider;
+
+    if (distance &lt; shortestDistance) { shortestDistance = distance; nearestIndex = i; }
+}</code></pre></li>
+  <li>Se mide hasta el <b>borde</b> del collider con <code>ClosestPoint</code> (no lo vimos en clase: devuelve el punto del collider más cercano al barista). Las máquinas son grandes y medir al centro hacía que se activaran desde muy lejos. Las bandejas no tienen collider, así que se mide a su centro y se le resta un radio.</li>
+  <li>La estación elegida se <b>resalta</b> (se tiñe de amarillo) para que sepas qué vas a usar antes de apretar E.</li>
+  <li>Con <b>R</b> se usa la misma búsqueda pero solo entre bandejas (<code>GetComponent&lt;Tray&gt;() == null</code> → <code>continue</code>).</li>
+</ol>
+</section>
+
+<section id="maquinas">
+<h2>Las máquinas: cómo diferencia cada una y cómo reacciona</h2>
+<p>Las tres heredan de <code>InteractiveStation</code> y funcionan con la misma idea: <b>un temporizador en Update con <code>Time.deltaTime</code></b>. Lo que cambia es qué aceptan y qué devuelven. Cada máquina tiene su propio <code>Interact</code>, y ahí está la diferencia.</p>
+<div class="tabla"><table>
+  <tr><th>Máquina</th><th>Acepta</th><th>Devuelve</th><th>Tiempo</th><th>Cómo decide</th></tr>
+  <tr><td>Moledora</td><td>Cafe</td><td>GroundCoffee</td><td>3 s</td><td><code>if</code></td></tr>
+  <tr><td>Cafetera</td><td>GroundCoffee o Leche</td><td>Coffee o FoamedMilk</td><td>4 s / 3 s</td><td><code>switch</code></td></tr>
+  <tr><td>Chocolatera</td><td>Chocolate</td><td>HotChocolate</td><td>4 s</td><td><code>if</code></td></tr>
+</table></div>
+<h3>Lo que pasa al apretar E (en este orden)</h3>
+<ol class="pasos">
+  <li><b>¿Está trabajando?</b> (<code>preparing == true</code>) → avisa "está trabajando" y no hace nada más.</li>
+  <li><b>¿Tiene algo listo?</b> → intenta dárselo al barista con <code>PickUpItem</code>. Si tiene las manos ocupadas, no se vacía.</li>
+  <li><b>¿Está vacía?</b> → mira qué trae el barista:
+    <ul>
+      <li>Si es lo que la máquina acepta: <code>DropItem()</code>, se pone <code>preparing = true</code> y <code>timeRemaining = preparationTime</code>.</li>
+      <li>Si no: <code>Notify("La moledora necesita granos de café.")</code>.</li>
+    </ul>
+  </li>
+</ol>
+<h3>La cafetera usa switch</h3>
+<pre><code>switch (inventory.GetCurrentItem())
+{
+    case PlayerInventory.ItemType.GroundCoffee:
+        inventory.DropItem();
+        StartPreparing(ItemType.GroundCoffee, ItemType.Coffee, coffeeTime);
+        break;
+    case PlayerInventory.ItemType.Milk:
+        inventory.DropItem();
+        StartPreparing(ItemType.Milk, ItemType.FoamedMilk, milkTime);
+        break;
+    default:
+        Notify("La cafetera necesita café molido o leche.");
+        break;
+}</code></pre>
+<p>Como acepta dos cosas distintas, guarda qué está preparando en <code>productInProgress</code> y, al terminar, lo pasa a <code>readyProduct</code>.</p>
+<h3>El temporizador</h3>
+<pre><code>private void Update()
+{
+    if (!preparing) return;              <span class="c">// no está trabajando: nada que contar</span>
+
+    timeRemaining -= Time.deltaTime;     <span class="c">// le resto lo que duró este frame</span>
+
+    if (timeRemaining &lt;= 0f)
+    {
+        preparing = false;
+        coffeeReady = true;
+        ShowInBubble(ItemType.GroundCoffee, true);
+        soundEffects.MachineReady();
+    }
+}</code></pre>
+<div class="decilo"><b>Para decir en la defensa</b><p>Time.deltaTime es lo que tardó el último frame. Si lo voy restando, la máquina tarda los mismos segundos en una compu rápida que en una lenta. No usé corrutinas porque no las vimos. Además, como en la pausa timeScale es 0, deltaTime vale 0 y el temporizador se frena solo.</p></div>
+<p><b>El globo de la máquina:</b> mientras trabaja muestra el ingrediente medio transparente (<code>Show(item, false)</code>, donde <code>ready</code> es un parámetro opcional). Cuando termina muestra el resultado bien visible.</p>
+</section>
+
+<section id="repisa">
+<h2>La repisa: apoyar y combinar</h2>
+<p><b>Script:</b> <code>Shelf</code>. Tiene 2 espacios y trabaja con <b>arrays</b>:</p>
+<ul>
+  <li><code>slotPositions[]</code> (Vector3, se edita en el Inspector): dónde se dibuja cada espacio. La cantidad de elementos define cuántos espacios hay.</li>
+  <li><code>slots[]</code> (ItemType): qué hay en cada espacio. Un array nuevo arranca lleno de <code>None</code> (el 0 del enum), o sea, vacío.</li>
+  <li><code>bubbles[]</code>: el dibujo de cada espacio. Es otro array paralelo.</li>
+</ul>
+<h3>Al apretar E</h3>
+<ol class="pasos">
+  <li><b>Si llevás algo, primero intenta combinar.</b> Recorre los espacios con un <code>for</code> y llama a <code>Combine(slots[i], itemInHand)</code>:
+<pre><code>if (IsPair(a, b, ItemType.Coffee, ItemType.FoamedMilk))
+    return ItemType.CoffeeWithMilk;
+if (IsPair(a, b, ItemType.HotChocolate, ItemType.FoamedMilk))
+    return ItemType.ChocolateWithMilk;
+return ItemType.None;   <span class="c">// no combinan</span></code></pre>
+  <code>IsPair</code> acepta los dos en cualquier orden: <code>(a == x &amp;&amp; b == y) || (a == y &amp;&amp; b == x)</code>.</li>
+  <li><b>Si no combina</b>, lo apoya en el primer espacio libre (<code>FindFreeSlot</code> devuelve el índice, o <code>-1</code> si está llena).</li>
+  <li><b>Con las manos vacías</b> agarra lo del espacio ocupado más cercano al barista.</li>
+</ol>
+</section>
+
+<section id="bandeja">
+<h2>Las bandejas</h2>
+<p><b>Script:</b> <code>Tray</code>. Cada cliente tiene la suya (se asigna en el Inspector con <code>customerTray</code>). Guarda dos cosas: <code>drink</code> y <code>cookie</code>, ambas <code>ItemType</code>.</p>
+<h3>Al apretar E, según lo que lleves</h3>
+<div class="tabla"><table>
+  <tr><th>Llevás…</th><th>Qué pasa</th></tr>
+  <tr><td>Nada</td><td><b>Entrega:</b> le pregunta al cliente <code>IsCorrectOrder(drink, cookie)</code>. Si es correcto, vacía la bandeja y llama a <code>customer.ReceiveOrder()</code>; si no, avisa "no es lo que pidió".</td></tr>
+  <tr><td>Una bebida lista</td><td>La apoya, si no había otra bebida.</td></tr>
+  <tr><td>Una galletita</td><td>La apoya, si no había otra galletita.</td></tr>
+  <tr><td>Un ingrediente sin preparar</td><td>"Eso no se puede servir: primero hay que prepararlo."</td></tr>
+</table></div>
+<p><code>IsDrink</code> y <code>IsCookie</code> son funciones que devuelven <code>bool</code> usando <code>||</code> (alcanza con que una opción coincida).</p>
+<p><b>R</b> saca primero la galletita y después la bebida, por si te equivocaste.</p>
+<p><b>Lo apoyado se ve sobre la bandeja:</b> en <code>Start</code> se crean dos dibujos con el catálogo (uno para la bebida, otro para la galletita), y <code>UpdateDrawings()</code> se llama cada vez que algo cambia. Si el objeto es <code>None</code>, el dibujo se oculta solo.</p>
+<p>La bandeja empieza desactivada y la activa el cliente cuando llega al mostrador.</p>
+</section>
+
+<section id="clientes">
+<h2>Los clientes</h2>
+<p><b>Scripts:</b> <code>Customer</code> (el pedido y la paciencia) y <code>CustomerMovement</code> (caminar). Hay tres clientes en la escena, cada uno con su puesto y su bandeja.</p>
+<h3>El ciclo de un cliente</h3>
+<pre class="mermaid">
+flowchart LR
+  A["Enter()<br/>aparece en la puerta"] --> B["Camina al mostrador<br/>MoveTowards"]
+  B --> C["ShowOrder()<br/>globo, bandeja y paciencia"]
+  C -->|"pedido correcto"| D["ReceiveOrder()"]
+  C -->|"paciencia en 0"| E["LeaveAngry()"]
+  D --> F["Leave()<br/>camina a la puerta"]
+  E --> F
+  F --> G["FinishedLeaving()<br/>pausa de 2 s"]
+  G --> H["GameManager.CustomerLeft()<br/>entra el próximo"]
+</pre>
+<h3>Caminar (CustomerMovement)</h3>
+<p>Dos <code>Transform</code> asignados en el Inspector: <code>entryPoint</code> (la puerta) y <code>waitPoint</code> (su puesto). En <code>Update</code>, si está <code>entering</code>, avanza con <code>Vector3.MoveTowards(..., speed * Time.deltaTime)</code>. Cuando la distancia es casi 0, avisa <code>customer.ShowOrder()</code>. Para salir hace lo mismo al revés y, al llegar, llama a <code>customer.FinishedLeaving()</code>.</p>
+<h3>El pedido</h3>
+<p>El GameManager le asigna bebida y galletita con <code>AssignOrder</code>. El pedido se ve en un globo arriba del cliente (<code>OrderBubble</code>). Para chequearlo:</p>
+<pre><code>public bool IsCorrectOrder(ItemType drink, ItemType cookie)
+{
+    return drink == orderedDrink &amp;&amp; cookie == orderedCookie;
+}</code></pre>
+<p>Si el pedido no lleva galletita, <code>orderedCookie</code> es <code>None</code>, y la bandeja también tiene que tener <code>None</code>.</p>
+<h3>La paciencia</h3>
+<ul>
+  <li>La paciencia depende del pedido: <code>maxPatience</code> + <code>extraWithMilk</code> (10 s si es "con leche") + <code>extraCookie</code> (6 s si lleva galletita). Los pedidos más largos tienen más tiempo.</li>
+  <li>En <code>Update</code>: <code>currentPatience -= Time.deltaTime</code>, y la barra (<code>Slider</code>) toma el valor <code>currentPatience / orderPatience</code> (de 1 a 0).</li>
+  <li><code>PaintBar</code> usa <code>if / else if / else</code>: verde si queda más de la mitad, amarilla si queda más de un cuarto y roja si queda menos.</li>
+  <li>Cuando llega a 0, avisa a <code>gameManager.CustomerOutOfPatience(this)</code>.</li>
+  <li>En el tutorial no hay paciencia: <code>ShowOrder</code> solo la arranca si <code>gameManager.IsTutorialFinished()</code>.</li>
+</ul>
+<h3>La pausa entre clientes</h3>
+<p>Después de salir no entra otro enseguida: <code>FinishedLeaving</code> pone <code>paused = true</code> y un temporizador de 2 s (<code>pauseBetweenCustomers</code>). Cuando termina, le avisa al GameManager.</p>
+</section>
+
+<section id="gamemanager">
+<h2>GameManager: las reglas</h2>
+<p>Es el "árbitro": cuenta pedidos y clientes perdidos, decide qué pide cada cliente y cuándo se gana o se pierde.</p>
+<h3>El tutorial con switch</h3>
+<pre><code>switch (completedOrders)
+{
+    case 0: customer = customer1; drink = ItemType.Coffee;      break;
+    case 1: customer = customer2; drink = ItemType.CoffeeWithMilk;       break;
+    case 2: customer = customer3; drink = ItemType.HotChocolate; break;
+}</code></pre>
+<p>Cuando se completan los 3 (<code>const int TutorialOrders = 3</code>), <code>FinishTutorial()</code> pone <code>tutorialFinished = true</code> y hace entrar a los clientes 1 y 2 con pedidos al azar.</p>
+<h3>Pedidos al azar con arrays</h3>
+<pre><code>private ItemType[] drinks = { Coffee, CoffeeWithMilk, HotChocolate, ChocolateWithMilk };
+private ItemType[] cookies = { None, RedVelvetCookie, VanillaChocolateCookie, ChocolateCookie };
+
+int drinkIndex = Random.Range(0, drinks.Length);
+int cookieIndex = Random.Range(0, cookies.Length);
+customer.AssignOrder(drinks[drinkIndex], cookies[cookieIndex]);</code></pre>
+<p>Como <code>None</code> está en el array de galletitas, hay 1 chance en 4 de que el pedido no lleve galletita. La primera vez que alguien pide galletita aparece una pista en el HUD (<code>cookiesExplained</code>).</p>
+<h3>Contadores, propinas y el tercer puesto</h3>
+<ul>
+  <li><code>OrderCompleted</code>: <code>completedOrders++</code>, suma la propina, actualiza el HUD y suena "entregar".</li>
+  <li><b>Propina</b> = <code>baseTip</code> + <code>maxExtraTip</code> × paciencia que le quedaba (de 0 a 1). Con 5 y 10, un cliente atendido rápido deja hasta $15, y uno a punto de irse, $5. En el tutorial siempre $5.
+<pre><code>return baseTip + (int)(maxExtraTip * customer.GetPatiencePercent());</code></pre>
+  El <code>(int)</code> convierte el resultado a entero (corta los decimales).</li>
+  <li><code>CustomerLeft</code>: entra un cliente nuevo y, si se llegó a <code>ordersForThirdCustomer</code>, se activa el tercero (una sola vez, con el bool <code>thirdCustomerActive</code>).</li>
+  <li><code>CustomerOutOfPatience</code>: <code>lostCustomers++</code>; si llega a 3, <code>LoseGame()</code>; si no, el cliente se va enojado.</li>
+</ul>
+<h3>Ganar, perder, reiniciar</h3>
+<ul>
+  <li><code>EndGame()</code> frena la paciencia de los tres clientes (un <code>for</code> sobre el array <code>customers</code>) y pone <code>Time.timeScale = 0</code>: todo lo que usa <code>deltaTime</code> se congela.</li>
+  <li>Se activa <code>victoryPanel</code> o <code>defeatPanel</code> con un resumen armado concatenando strings. En la victoria, el comentario cambia según cuántos clientes perdiste (<code>if / else if / else</code>).</li>
+  <li>Los botones llaman a <code>RestartGame()</code> (vuelve a cargar la escena con <code>SceneManager.LoadScene</code>) o a <code>GoToMenu()</code>. Antes de cargar, ponen <code>timeScale</code> en 1 otra vez.</li>
+</ul>
+</section>
+
+<section id="tutorial">
+<h2>La guía del tutorial</h2>
+<p><b>Script:</b> <code>TutorialGuide</code> (en el HUD). Muestra arriba "Tu cliente quiere…" más <b>una sola</b> instrucción, y una flecha que rebota sobre la estación a la que tenés que ir.</p>
+<ul>
+  <li>El GameManager le avisa <code>StartOrder(...)</code>, <code>OrderDelivered()</code> y <code>Finish()</code>.</li>
+  <li>En cada <code>Update</code> elige el paso con una cadena de <code>if / else if</code> que empieza <b>desde el final de la receta</b>:
+    <ol>
+      <li>¿La bandeja ya tiene la bebida? → "Apretá E en la bandeja para entregar"</li>
+      <li>¿La tenés en la mano? → "Llevala a la bandeja"</li>
+      <li>¿Está lista en la máquina? → "Retirala"</li>
+      <li>¿La máquina está trabajando? → "¡Esperá!"</li>
+      <li>Si no: "Agarrá el ingrediente"</li>
+    </ol>
+  </li>
+  <li>Como se fija en el estado real del juego (la mano, las máquinas, las repisas, la bandeja), <b>se acomoda sola</b> si el jugador se equivoca o hace las cosas en otro orden.</li>
+  <li>La flecha es un prefab que se crea con <code>Instantiate</code> en <code>Start</code>. Se mueve arriba y abajo con un temporizador.</li>
+</ul>
+</section>
+
+<section id="resto">
+<h2>HUD, pausa, sonidos, menú, globos y animación</h2>
+<h3>HUD</h3>
+<p>La barra de arriba muestra los pedidos "3 / 15" con una barra de progreso (<code>Image</code> en modo Filled, <code>fillAmount</code>), la plata de las propinas y 3 corazones (las vidas). Abajo hay un cartel de mensajes: <code>ShowMessage(text, seconds = -1, wait = false)</code> usa <b>parámetros opcionales</b>. Con <code>wait = true</code>, el mensaje espera a que termine el anterior. El cartel se oculta con un temporizador en Update.</p>
+<h3>Pausa (PauseMenu)</h3>
+<p>Esc alterna el panel. <code>Pause()</code> pone <code>Time.timeScale = 0</code> y <code>Resume()</code> lo vuelve a 1. No deja pausar si la partida ya terminó. Las estaciones y el barista chequean <code>Time.timeScale == 0f</code> para no reaccionar en pausa.</p>
+<h3>Sonidos</h3>
+<p>Un <code>AudioSource</code> en el HUD y 9 <code>AudioClip</code> asignados en el Inspector. Cada función (<code>PickUp()</code>, <code>Error()</code>, <code>MachineReady()</code>…) hace <code>PlayOneShot</code>. Las estaciones lo buscan la primera vez que lo necesitan (<code>GetSoundEffects()</code>).</p>
+<h3>Menú principal</h3>
+<p>Paneles (Principal, Cómo jugar, Créditos) que se prenden y apagan con <code>SetActive</code>. Cómo jugar tiene 3 páginas en un array <code>GameObject[]</code>: Siguiente y Anterior "dan la vuelta" al llegar a la última o a la primera. Jugar carga la escena con <code>SceneManager.LoadScene("Cafeteria")</code>.</p>
+<h3>Catálogo y globos</h3>
+<p><code>ItemCatalog</code> es el <b>único lugar</b> que sabe qué sprite tiene cada objeto: un <code>switch</code> sobre <code>ItemType</code> que devuelve el <code>Sprite</code>. También crea los globos con <code>Instantiate</code> del prefab <code>Globo</code>. Los globos no son hijos del objeto: lo siguen en <code>LateUpdate</code> (que corre después de que todo se movió) para no quedarse atrás.</p>
+<h3>Animación del barista</h3>
+<p>El Player tiene un <code>Animator</code> con <code>Player.controller</code>, que tiene 4 estados: Walk_Down, Walk_Up, Walk_Left y Walk_Right. Cada clip tiene los 9 cuadros de esa dirección de la hoja <code>walk.png</code>. En <code>PlayerMovement.UpdateAnimation()</code>:</p>
+<pre><code>if (movement.x &gt; 0)      currentAnimation = "Walk_Right";
+else if (movement.x &lt; 0) currentAnimation = "Walk_Left";
+else if (movement.y &gt; 0) currentAnimation = "Walk_Up";
+else if (movement.y &lt; 0) currentAnimation = "Walk_Down";
+
+if (isWalking) { animator.speed = 1f; animator.Play(currentAnimation); }
+else               { animator.Play(currentAnimation, 0, 0f); animator.speed = 0f; }</code></pre>
+<p>Quieto, vuelve al primer cuadro (el barista parado) y frena la animación. Como <code>currentAnimation</code> guarda la última dirección, queda mirando hacia donde caminó. El movimiento en sí usa <code>Rigidbody2D.MovePosition</code> en <code>FixedUpdate</code>, para respetar los choques con las paredes y los muebles.</p>
+</section>
+
+<section id="pedido">
+<h2>Un pedido de punta a punta: café con leche</h2>
+<p>Este recorrido sirve para el video: muestra cómo se pasan la información los scripts.</p>
+<ol class="pasos">
+  <li><b>GameManager</b> elige el pedido (<code>Random.Range</code> sobre los arrays) y llama a <code>customer.AssignOrder(CoffeeWithMilk, None)</code> y a <code>customer.Enter()</code>.</li>
+  <li><b>CustomerMovement</b> lo hace caminar de la puerta al puesto. Al llegar, <b>Cliente.ShowOrder()</b> activa la bandeja, muestra el globo con el pedido y arranca la paciencia.</li>
+  <li>El barista va a Ingredientes y aprieta <b>Z</b>: <b>IngredientStation</b> llama a <code>inventory.PickUpItem(CoffeeBeans)</code>, y el globo del barista muestra los granos.</li>
+  <li>Se acerca a la moledora y aprieta <b>E</b>. <b>PlayerInteraction</b> encuentra la estación más cercana y llama a <code>Interact</code>; como es una <b>CoffeeGrinder</b>, corre su versión: suelta los granos y arranca el temporizador de 3 s.</li>
+  <li>Cuando termina, otra <b>E</b> le da <code>GroundCoffee</code>. En la <b>Cafetera</b>, el <code>switch</code> entra en <code>case GroundCoffee</code> y, a los 4 s, hay <code>Coffee</code>.</li>
+  <li>Lo apoya en una <b>Repisa</b> (no combina con nada, así que va a un espacio libre).</li>
+  <li><b>X</b> para leche, <b>E</b> en la cafetera (<code>case Milk</code>) y, a los 3 s, sale <code>FoamedMilk</code>.</li>
+  <li><b>E</b> en la repisa con la leche en la mano: <code>Combine(Coffee, FoamedMilk)</code> devuelve <code>CoffeeWithMilk</code>, que queda en ese espacio.</li>
+  <li>Con las manos vacías, <b>E</b> en la repisa: agarra el café con leche.</li>
+  <li><b>E</b> en la bandeja: <code>IsDrink</code> es true y la apoya, con su dibujo encima.</li>
+  <li>Otra <b>E</b> con las manos vacías: la bandeja pregunta <code>customer.IsCorrectOrder(CoffeeWithMilk, None)</code> y da true. Vacía la bandeja y llama a <code>customer.ReceiveOrder()</code>.</li>
+  <li><b>Cliente</b> avisa a <code>gameManager.OrderCompleted(this)</code>: suma el pedido, calcula la propina según la paciencia que quedaba, actualiza el HUD y suena "entregar". Si llegaste a 15, gana.</li>
+  <li>El cliente se retira, espera 2 s y <code>CustomerLeft</code> hace entrar a otro con un pedido nuevo.</li>
+</ol>
+</section>
+
+<section id="preguntas">
+<h2>Preguntas probables en la defensa</h2>
+<details><summary>¿Cómo sabe el juego qué objeto tiene el barista?</summary><p>Con una variable <code>currentItem</code> de tipo <code>ItemType</code> (un enum) en PlayerInventory. Las máquinas la consultan con <code>GetCurrentItem()</code> y la comparan con <code>==</code>.</p></details>
+<details><summary>¿Por qué un enum y no strings o números?</summary><p>Con nombres fijos no hay errores de tipeo: si escribo mal, no compila. Y se lee mejor <code>ItemType.Milk</code> que un 2.</p></details>
+<details><summary>¿Qué es la herencia y para qué la usaste?</summary><p>Todas las estaciones que se usan con E heredan de InteractiveStation. La base tiene <code>virtual Interact</code> y cada una hace <code>override</code>. Así PlayerInteraction trata a todas igual (un solo array, una sola llamada) y cada una reacciona distinto. <code>protected Notify</code> evita repetir el código de mostrar mensajes.</p></details>
+<details><summary>¿Cómo elige qué estación usar con la E?</summary><p>Recorre el array de estaciones con un for, mide la distancia del barista al borde de cada una y se queda con la menor, siempre que sea menor que el alcance. Saltea las desactivadas con <code>continue</code>.</p></details>
+<details><summary>¿Por qué buscás las estaciones en Start y no en Update?</summary><p>Porque buscar objetos en la escena es lento. Lo hago una vez y guardo el resultado en un array, igual que el GetComponent guardado en Start que vimos en clase.</p></details>
+<details><summary>¿Cómo hacés que una máquina tarde X segundos sin corrutinas?</summary><p>Con un temporizador en Update: un bool <code>preparing</code> y un float <code>timeRemaining</code> al que le resto <code>Time.deltaTime</code> cada frame. Cuando llega a 0, el producto está listo.</p></details>
+<details><summary>¿Qué es Time.timeScale y dónde lo usás?</summary><p>Multiplica el paso del tiempo. En 0 congela todo lo que usa deltaTime. Lo uso para la pausa y al ganar o perder. Al reiniciar o ir al menú lo vuelvo a 1.</p></details>
+<details><summary>¿Cómo combina la repisa las bebidas?</summary><p>Antes de apoyar, recorre sus espacios y llama a <code>Combine(lo que hay, lo que traigo)</code>. Si son café preparado y leche espumada (en cualquier orden), devuelve café con leche, y lo mismo con el chocolate. Si no combinan, devuelve None y lo apoya en un lugar libre.</p></details>
+<details><summary>¿Cómo se decide si el pedido es correcto?</summary><p>La bandeja le pasa al cliente su bebida y su galletita, y el cliente compara las dos con lo que pidió usando <code>&amp;&amp;</code>. Las dos tienen que coincidir, incluso None si no pidió galletita.</p></details>
+<details><summary>¿Qué son los arrays paralelos?</summary><p>Dos arrays del mismo largo donde la posición i de uno corresponde a la posición i del otro. En PlayerInteraction, <code>stations[i]</code>, <code>drawings[i]</code> y <code>colliders[i]</code> son de la misma estación. En la repisa, <code>slots[i]</code> y <code>bubbles[i]</code>.</p></details>
+<details><summary>¿Cómo funcionan los parámetros opcionales que usaste?</summary><p>Tienen un valor por defecto en la declaración, por ejemplo <code>Notify(string message, bool isError = true)</code> o <code>ShowMessage(text, seconds = -1f, wait = false)</code>. Si no los paso, se usa ese valor.</p></details>
+<details><summary>¿Cómo se calcula la propina?</summary><p>Base 5 más hasta 10 extra según la paciencia que le quedaba al cliente (de 0 a 1): <code>baseTip + (int)(maxExtraTip * percent)</code>.</p></details>
+<details><summary>¿Qué cosas usaste que no vimos en clase?</summary><p><code>Collider2D.ClosestPoint</code> (el punto del borde más cercano), <code>FindObjectsByType</code>/<code>FindFirstObjectByType</code> (la versión nueva de FindObjectOfType), <code>Vector3.MoveTowards</code>, <code>Mathf.Max</code>, <code>animator.Play</code> y <code>AudioSource.PlayOneShot</code>. Todos están explicados en los comentarios.</p></details>
+</section>
+
+<section id="video">
+<h2>Guion sugerido para el video</h2>
+<ol class="pasos">
+  <li><b>Presentación (30 s).</b> Nombre del juego, idea (cafetería estilo Papa's) y controles.</li>
+  <li><b>Jugar el tutorial (1–2 min).</b> Mostrar la guía paso a paso y la flecha. Hacer el café con leche completo.</li>
+  <li><b>Partida normal (1 min).</b> Paciencia con colores, pedidos con galletita, lo apoyado sobre la bandeja, la propina que cambia según lo rápido que fuiste. Equivocarse a propósito y usar R o el tacho.</li>
+  <li><b>Código: el inventario y el enum.</b> PlayerInventory: PickUpItem y DropItem.</li>
+  <li><b>Código: herencia.</b> InteractiveStation → Cafetera (el switch). Mostrar <code>virtual</code> y <code>override</code>.</li>
+  <li><b>Código: la E.</b> PlayerInteraction: el for que busca la más cercana.</li>
+  <li><b>Código: temporizador.</b> Update de la moledora con deltaTime.</li>
+  <li><b>Código: reglas.</b> GameManager: switch del tutorial, Random con arrays, propina, timeScale al terminar.</li>
+  <li><b>Cierre.</b> Victoria o derrota (se puede forzar bajando <code>ordersToWin</code> en el Inspector), pausa y menú.</li>
+</ol>
+<div class="decilo"><b>Antes de entregar</b><p>Borrar <code>Packages/com.claude.puente</code> y la carpeta <code>PuenteClaude/</code>: es la herramienta de pruebas que usé para probar el juego rápido, no es parte del parcial.</p></div>
+</section>
+
+<footer>Barista Caótico · machete para la defensa · actualizado el 20/10/2026</footer>
+</main>
+</div>

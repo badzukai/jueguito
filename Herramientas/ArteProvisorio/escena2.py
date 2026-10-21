@@ -83,6 +83,8 @@ def caja(n, ancho, alto, ox=0, oy=0):
 
 
 def gs(n):
+    # Los scripts se renombraron al inglés (20/10): traducimos el nombre viejo.
+    n = {'Bandeja': 'Tray', 'Cafetera': 'CoffeeMachine', 'CatalogoObjetos': 'ItemCatalog', 'Chocolatera': 'ChocolateMachine', 'Cliente': 'Customer', 'EstacionGalletitas': 'CookieStation', 'EstacionIngredientes': 'IngredientStation', 'EstacionInteractiva': 'InteractiveStation', 'GloboObjeto': 'ItemBubble', 'GloboPedido': 'OrderBubble', 'GuiaTutorial': 'TutorialGuide', 'MenuPausa': 'PauseMenu', 'MenuPrincipal': 'MainMenu', 'MoledoraCafe': 'CoffeeGrinder', 'MovimientoCliente': 'CustomerMovement', 'Repisa': 'Shelf', 'Sonidos': 'SoundEffects', 'Tacho': 'TrashCan'}.get(n, n)
     return open(os.path.join(SCRIPTS, n + '.cs.meta')).read().split('guid: ')[1].split()[0]
 
 
@@ -108,22 +110,22 @@ for k, x in enumerate(XS, start=1):
     mover('Cliente%d' % k, x)
     mover('PuestoCliente%d' % k, x)
     sprite('Cliente%d' % k, 'Personajes/Cliente%d' % k, 24 / PPU, 34 / PPU)
-    campo('Cliente%d' % k, 'Cliente', r'posicionGlobo: \{.*?\}', '{x: 0, y: 0.95, z: 0}')
+    campo('Cliente%d' % k, 'Cliente', r'bubblePosition: \{.*?\}', '{x: 0, y: 0.95, z: 0}')
 # Los clientes entran por la puerta.
 mover('EntradaClientes', -2.8, 3.4)
 
 # --------------------------------------------------------- barista
 sprite('Player', 'Personajes/Barista', 24 / PPU, 34 / PPU)
 caja('Player', 0.6, 0.4, 0, -0.33)
-campo('Player', 'PlayerInventory', r'posicionGlobo: \{.*?\}', '{x: 0, y: 1, z: 0}')
-campo('Player', 'PlayerInteraction', r'distanciaInteraccion: .*', '1.9')
+campo('Player', 'PlayerInventory', r'bubblePosition: \{.*?\}', '{x: 0, y: 1, z: 0}')
+campo('Player', 'PlayerInteraction', r'interactionDistance: .*', '1.9')
 
 # --------------------------------------------------------- máquinas
 for n, x, script in (('Moledora', -4.4, 'MoledoraCafe'), ('Cafetera', 0, 'Cafetera'), ('Chocolatera', 4.4, 'Chocolatera')):
     mover(n, x, -3.5)
     sprite(n, 'Escenario/' + n, 84 / PPU, 56 / PPU)
     caja(n, 84 / PPU, 56 / PPU)
-    campo(n, script, r'posicionGlobo: \{.*?\}', '{x: 0, y: 1.2, z: 0}')
+    campo(n, script, r'bubblePosition: \{.*?\}', '{x: 0, y: 1.2, z: 0}')
 
 # -------------------------------------------- estaciones de los costados
 for n, x, clave in (('EstacionIngredientes', -7.95, 'Ingredientes'), ('EstacionGalletitas', 7.95, 'Galletitas')):
@@ -136,8 +138,8 @@ for n, x in (('RepisaIzquierda', -7.95), ('RepisaDerecha', 7.95)):
     caja(n, 68 / PPU, 30 / PPU)
     r = comp(n, '114', gs('Repisa'))
     d = docs[idx[r]]
-    d2, k = re.subn(r'posicionesEspacios:\n  - \{.*?\}\n  - \{.*?\}',
-                    'posicionesEspacios:\n  - {x: -0.5, y: 0.3, z: 0}\n  - {x: 0.5, y: 0.3, z: 0}', d)
+    d2, k = re.subn(r'slotPositions:\n  - \{.*?\}\n  - \{.*?\}',
+                    'slotPositions:\n  - {x: -0.5, y: 0.3, z: 0}\n  - {x: 0.5, y: 0.3, z: 0}', d)
     assert k == 1, d[-400:]
     docs[idx[r]] = d2
 

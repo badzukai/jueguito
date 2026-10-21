@@ -5,13 +5,13 @@ using UnityEngine;
 //
 // Para pausar usamos Time.timeScale = 0, como al terminar la partida:
 // el tiempo deja de correr, así que no se mueve nada ni bajan los temporizadores.
-public class MenuPausa : MonoBehaviour
+public class PauseMenu : MonoBehaviour
 {
     // Panel que se muestra mientras el juego está en pausa.
-    [SerializeField] private GameObject panelPausa;
+    [SerializeField] private GameObject pausePanel;
 
     // true mientras el juego está pausado.
-    private bool enPausa = false;
+    private bool paused = false;
 
     // El GameManager sabe reiniciar la partida y volver al menú.
     private GameManager gameManager;
@@ -19,7 +19,7 @@ public class MenuPausa : MonoBehaviour
     private void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
-        panelPausa.SetActive(false);
+        pausePanel.SetActive(false);
     }
 
     private void Update()
@@ -27,53 +27,53 @@ public class MenuPausa : MonoBehaviour
         // Esc abre la pausa, y si ya estaba abierta, la cierra.
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (enPausa)
+            if (paused)
             {
-                Continuar();
+                Resume();
             }
             else
             {
-                Pausar();
+                Pause();
             }
         }
     }
 
     // Abre la pausa (salvo que la partida ya haya terminado).
-    public void Pausar()
+    public void Pause()
     {
-        if (gameManager != null && gameManager.EstaTerminadaPartida())
+        if (gameManager != null && gameManager.IsGameOver())
         {
             return;
         }
 
-        enPausa = true;
-        panelPausa.SetActive(true);
+        paused = true;
+        pausePanel.SetActive(true);
         Time.timeScale = 0f;
     }
 
     // Botón "Continuar": cierra la pausa y el tiempo vuelve a correr.
-    public void Continuar()
+    public void Resume()
     {
-        enPausa = false;
-        panelPausa.SetActive(false);
+        paused = false;
+        pausePanel.SetActive(false);
         Time.timeScale = 1f;
     }
 
     // Botón "Reiniciar".
-    public void Reiniciar()
+    public void Restart()
     {
         if (gameManager != null)
         {
-            gameManager.ReiniciarPartida();
+            gameManager.RestartGame();
         }
     }
 
     // Botón "Menú".
-    public void IrAlMenu()
+    public void GoToMenu()
     {
         if (gameManager != null)
         {
-            gameManager.IrAlMenu();
+            gameManager.GoToMenu();
         }
     }
 }

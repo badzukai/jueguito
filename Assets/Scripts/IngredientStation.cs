@@ -4,32 +4,32 @@ using UnityEngine;
 //   Z -> granos de café
 //   X -> leche
 //   C -> chocolate
-// No usa la tecla E, por eso no hereda de EstacionInteractiva.
-public class EstacionIngredientes : MonoBehaviour
+// No usa la tecla E, por eso no hereda de InteractiveStation.
+public class IngredientStation : MonoBehaviour
 {
     // Distancia máxima a la que el barista puede estar para usarla.
-    [SerializeField] private float distanciaInteraccion = 1.5f;
+    [SerializeField] private float interactionDistance = 1.5f;
 
     // Referencia al barista. La asignamos desde el Inspector.
-    [SerializeField] private Transform jugador;
+    [SerializeField] private Transform player;
 
     // Inventario del barista. Lo buscamos una sola vez en Awake.
-    private PlayerInventory inventario;
+    private PlayerInventory inventory;
 
     // Dibujo de la estación: lo pintamos de amarillo cuando el barista está cerca,
     // igual que las estaciones de la tecla E (ver PlayerInteraction).
-    private SpriteRenderer dibujo;
+    private SpriteRenderer drawing;
 
     // Color con el que se resalta.
-    [SerializeField] private Color colorResaltado = new Color(1f, 0.88f, 0.55f);
+    [SerializeField] private Color highlightColor = new Color(1f, 0.88f, 0.55f);
 
     private void Awake()
     {
-        dibujo = GetComponent<SpriteRenderer>();
+        drawing = GetComponent<SpriteRenderer>();
 
-        if (jugador != null)
+        if (player != null)
         {
-            inventario = jugador.GetComponent<PlayerInventory>();
+            inventory = player.GetComponent<PlayerInventory>();
         }
         else
         {
@@ -40,7 +40,7 @@ public class EstacionIngredientes : MonoBehaviour
     private void Update()
     {
         // Si no tenemos el inventario, no podemos hacer nada.
-        if (inventario == null)
+        if (inventory == null)
         {
             return;
         }
@@ -52,47 +52,47 @@ public class EstacionIngredientes : MonoBehaviour
         }
 
         // Si el barista está cerca, la estación se pinta; si no, vuelve a su color.
-        if (dibujo != null)
+        if (drawing != null)
         {
-            if (JugadorEstaCerca())
+            if (IsPlayerNear())
             {
-                dibujo.color = colorResaltado;
+                drawing.color = highlightColor;
             }
             else
             {
-                dibujo.color = Color.white;
+                drawing.color = Color.white;
             }
         }
 
         // Revisamos las teclas (la distancia se vuelve a comprobar al entregar).
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            EntregarIngrediente(PlayerInventory.TipoObjeto.Cafe);
+            GiveIngredient(PlayerInventory.ItemType.CoffeeBeans);
         }
         else if (Input.GetKeyDown(KeyCode.X))
         {
-            EntregarIngrediente(PlayerInventory.TipoObjeto.Leche);
+            GiveIngredient(PlayerInventory.ItemType.Milk);
         }
         else if (Input.GetKeyDown(KeyCode.C))
         {
-            EntregarIngrediente(PlayerInventory.TipoObjeto.Chocolate);
+            GiveIngredient(PlayerInventory.ItemType.Chocolate);
         }
     }
 
     // Le da el ingrediente al barista, solo si está cerca.
-    private void EntregarIngrediente(PlayerInventory.TipoObjeto ingrediente)
+    private void GiveIngredient(PlayerInventory.ItemType ingredient)
     {
-        if (JugadorEstaCerca())
+        if (IsPlayerNear())
         {
-            inventario.RecogerObjeto(ingrediente);
+            inventory.PickUpItem(ingredient);
         }
     }
 
-    // Devuelve true si el barista está a menos de distanciaInteraccion.
+    // Devuelve true si el barista está a menos de interactionDistance.
     // Vector2.Distance calcula la distancia entre dos posiciones.
-    private bool JugadorEstaCerca()
+    private bool IsPlayerNear()
     {
-        float distancia = Vector2.Distance(transform.position, jugador.position);
-        return distancia <= distanciaInteraccion;
+        float distance = Vector2.Distance(transform.position, player.position);
+        return distance <= interactionDistance;
     }
 }

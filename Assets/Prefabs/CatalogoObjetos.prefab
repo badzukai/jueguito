@@ -44,17 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa38d03443394ad0a0222d9e171422b2, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::CatalogoObjetos
-  prefabGlobo: {fileID: 100300, guid: c8d4b0b9763343e78364fd49f68f9ec3, type: 3}
-  prefabGloboPedido: {fileID: 500300, guid: f17ecc256dce4f859be011df943c9d9b, type: 3}
-  spriteCafe: {fileID: 21300000, guid: 58960ac583af41fe896c2da23035ae0e, type: 3}
-  spriteLeche: {fileID: 21300000, guid: c5b8a9d493a048878b3b45515aa813ac, type: 3}
-  spriteChocolate: {fileID: 21300000, guid: ab769ee4f03c4b9e93394340889be318, type: 3}
-  spriteCafeMolido: {fileID: 21300000, guid: ed301d4ecad042199c2ae07527f4e637, type: 3}
-  spriteLecheEspumada: {fileID: 21300000, guid: 0789ca4aa94f4046b22550921242d73f, type: 3}
-  spriteCafePreparado: {fileID: 21300000, guid: acc5c5f8b203469f9d60b37d01ec29c8, type: 3}
-  spriteChocolatePreparado: {fileID: 21300000, guid: b6b1f21a844345cc8d554274d5b0d772, type: 3}
-  spriteCafeConLeche: {fileID: 21300000, guid: 5d200264c60542a4ad9d3cca1caac198, type: 3}
-  spriteChocolateConLeche: {fileID: 21300000, guid: 4211f4bf7aef4e6ab3079776bce93374, type: 3}
-  spriteGalletitaRedVelvet: {fileID: 21300000, guid: 725ec325e88643008db2cd78271f7d0f, type: 3}
-  spriteGalletitaVainillaChocolate: {fileID: 21300000, guid: a0d8c256654d49cd80b7637f5564ca54, type: 3}
-  spriteGalletitaChocolate: {fileID: 21300000, guid: 6441ed77b03643f580e39015be415482, type: 3}
+  bubblePrefab: {fileID: 100300, guid: c8d4b0b9763343e78364fd49f68f9ec3, type: 3}
+  orderBubblePrefab: {fileID: 500300, guid: f17ecc256dce4f859be011df943c9d9b, type: 3}
+  coffeeBeansSprite: {fileID: 21300000, guid: 58960ac583af41fe896c2da23035ae0e, type: 3}
+  milkSprite: {fileID: 21300000, guid: c5b8a9d493a048878b3b45515aa813ac, type: 3}
+  chocolateSprite: {fileID: 21300000, guid: ab769ee4f03c4b9e93394340889be318, type: 3}
+  groundCoffeeSprite: {fileID: 21300000, guid: ed301d4ecad042199c2ae07527f4e637, type: 3}
+  foamedMilkSprite: {fileID: 21300000, guid: 0789ca4aa94f4046b22550921242d73f, type: 3}
+  coffeeSprite: {fileID: 21300000, guid: acc5c5f8b203469f9d60b37d01ec29c8, type: 3}
+  hotChocolateSprite: {fileID: 21300000, guid: b6b1f21a844345cc8d554274d5b0d772, type: 3}
+  coffeeWithMilkSprite: {fileID: 21300000, guid: 5d200264c60542a4ad9d3cca1caac198, type: 3}
+  chocolateWithMilkSprite: {fileID: 21300000, guid: 4211f4bf7aef4e6ab3079776bce93374, type: 3}
+  redVelvetCookieSprite: {fileID: 21300000, guid: 725ec325e88643008db2cd78271f7d0f, type: 3}
+  vanillaChocolateCookieSprite: {fileID: 21300000, guid: a0d8c256654d49cd80b7637f5564ca54, type: 3}
+  chocolateCookieSprite: {fileID: 21300000, guid: 6441ed77b03643f580e39015be415482, type: 3}

@@ -84,6 +84,8 @@ def caja(n, ancho, alto, ox=0, oy=0):
 
 
 def gs(n):
+    # Los scripts se renombraron al inglés (20/10): traducimos el nombre viejo.
+    n = {'Bandeja': 'Tray', 'Cafetera': 'CoffeeMachine', 'CatalogoObjetos': 'ItemCatalog', 'Chocolatera': 'ChocolateMachine', 'Cliente': 'Customer', 'EstacionGalletitas': 'CookieStation', 'EstacionIngredientes': 'IngredientStation', 'EstacionInteractiva': 'InteractiveStation', 'GloboObjeto': 'ItemBubble', 'GloboPedido': 'OrderBubble', 'GuiaTutorial': 'TutorialGuide', 'MenuPausa': 'PauseMenu', 'MenuPrincipal': 'MainMenu', 'MoledoraCafe': 'CoffeeGrinder', 'MovimientoCliente': 'CustomerMovement', 'Repisa': 'Shelf', 'Sonidos': 'SoundEffects', 'Tacho': 'TrashCan'}.get(n, n)
     return open(os.path.join(SCRIPTS, n + '.cs.meta')).read().split('guid: ')[1].split()[0]
 
 
@@ -112,7 +114,7 @@ for k, x in enumerate(XS, start=1):
     mover('Cliente%d' % k, x, 0.75)
     mover('PuestoCliente%d' % k, x, 0.75)
     sprite('Cliente%d' % k, 'Personajes/Cliente%d' % k, 24, 34, 0)
-    campo('Cliente%d' % k, 'Cliente', 'posicionGlobo', '{x: 0, y: 1, z: 0}')
+    campo('Cliente%d' % k, 'Cliente', 'bubblePosition', '{x: 0, y: 1, z: 0}')
 mover('EntradaClientes', 0, 3.0)
 
 # Máquinas arriba de la barra (pivote abajo, apoyadas sobre la tapa).
@@ -120,14 +122,14 @@ for n, x, script in (('Moledora', -2.5, 'MoledoraCafe'), ('Cafetera', 2.5, 'Cafe
     mover(n, x, 0.08)
     sprite(n, 'Escenario/' + n, 70, 52, 6)
     caja(n, 2.19, 1.63, 0, 0.81)
-    campo(n, script, 'posicionGlobo', '{x: 0, y: 2.05, z: 0}')
+    campo(n, script, 'bubblePosition', '{x: 0, y: 2.05, z: 0}')
 
 # ------------------------------------------------------------ barista
 mover('Player', 0, -1.3)
 sprite('Player', 'Personajes/Barista', 24, 34, 7)
 caja('Player', 0.6, 0.4, 0, -0.33)
-campo('Player', 'PlayerInventory', 'posicionGlobo', '{x: 0, y: 1, z: 0}')
-campo('Player', 'PlayerInteraction', 'distanciaInteraccion', '1.5')
+campo('Player', 'PlayerInventory', 'bubblePosition', '{x: 0, y: 1, z: 0}')
+campo('Player', 'PlayerInteraction', 'interactionDistance', '1.5')
 
 # ------------------------------------------------------------ cocina
 for n, x, clave, script in (('EstacionIngredientes', -7.75, 'Ingredientes', 'EstacionIngredientes'),
@@ -135,15 +137,15 @@ for n, x, clave, script in (('EstacionIngredientes', -7.75, 'Ingredientes', 'Est
     mover(n, x, -2.5)
     sprite(n, 'Escenario/' + clave, 72, 76, 3)
     caja(n, 2.25, 2.375)
-    campo(n, script, 'distanciaInteraccion', '1.8')
+    campo(n, script, 'interactionDistance', '1.8')
 
 for n, x in (('RepisaIzquierda', -2.6), ('RepisaDerecha', 2.6)):
     mover(n, x, -3.4)
     sprite(n, 'Escenario/Repisa', 64, 40, 3)
     caja(n, 2.0, 1.06, 0, 0.094)
     r = comp(n, '114', gs('Repisa'))
-    d2, k = re.subn(r'posicionesEspacios:\n  - \{.*?\}\n  - \{.*?\}',
-                    'posicionesEspacios:\n  - {x: -0.5, y: 0.22, z: 0}\n  - {x: 0.5, y: 0.22, z: 0}', docs[idx[r]])
+    d2, k = re.subn(r'slotPositions:\n  - \{.*?\}\n  - \{.*?\}',
+                    'slotPositions:\n  - {x: -0.5, y: 0.22, z: 0}\n  - {x: 0.5, y: 0.22, z: 0}', docs[idx[r]])
     assert k == 1
     docs[idx[r]] = d2
 

@@ -316,7 +316,7 @@ public static class PuenteClaude
     static string EnLaMano()
     {
         UnityEngine.Object inv = Primero("PlayerInventory");
-        return inv == null ? "?" : Metodo(inv, "ObtenerObjetoActual").ToString();
+        return inv == null ? "?" : Metodo(inv, "GetCurrentItem").ToString();
     }
 
     // -------------------------------------------------------- acciones
@@ -331,13 +331,13 @@ public static class PuenteClaude
 
     static void Tecla(string k)
     {
-        Type tipoObjeto = TipoJuego("PlayerInventory").GetNestedType("TipoObjeto");
+        Type tipoObjeto = TipoJuego("PlayerInventory").GetNestedType("ItemType");
         UnityEngine.Object inv = Primero("PlayerInventory");
 
         if (k == "E" || k == "R")
         {
             UnityEngine.Object pi = Primero("PlayerInteraction");
-            object est = Metodo(pi, "BuscarEstacionCercana", k == "R");
+            object est = Metodo(pi, "FindNearestStation", k == "R");
             if (est == null)
             {
                 Escribir("tecla " + k + ": no hay ninguna estación cerca");
@@ -346,26 +346,26 @@ public static class PuenteClaude
             Component ce = (Component)est;
             if (k == "E")
             {
-                Metodo(est, "Interactuar", inv);
+                Metodo(est, "Interact", inv);
             }
             else
             {
-                Component bandeja = ce.GetComponent(TipoJuego("Bandeja"));
-                Metodo(bandeja, "RetirarProducto", inv);
+                Component bandeja = ce.GetComponent(TipoJuego("Tray"));
+                Metodo(bandeja, "RemoveProduct", inv);
             }
             Escribir("tecla " + k + " -> " + ce.name + " | en la mano: " + EnLaMano());
             return;
         }
 
-        string ingrediente = k == "Z" ? "Cafe" : (k == "X" ? "Leche" : "Chocolate");
-        string galletita = k == "Z" ? "GalletitaRedVelvet" : (k == "X" ? "GalletitaVainillaChocolate" : "GalletitaChocolate");
-        foreach (UnityEngine.Object e in Buscar("EstacionIngredientes"))
+        string ingrediente = k == "Z" ? "CoffeeBeans" : (k == "X" ? "Milk" : "Chocolate");
+        string galletita = k == "Z" ? "RedVelvetCookie" : (k == "X" ? "VanillaChocolateCookie" : "ChocolateCookie");
+        foreach (UnityEngine.Object e in Buscar("IngredientStation"))
         {
-            Metodo(e, "EntregarIngrediente", Enum.Parse(tipoObjeto, ingrediente));
+            Metodo(e, "GiveIngredient", Enum.Parse(tipoObjeto, ingrediente));
         }
-        foreach (UnityEngine.Object e in Buscar("EstacionGalletitas"))
+        foreach (UnityEngine.Object e in Buscar("CookieStation"))
         {
-            Metodo(e, "EntregarGalletita", Enum.Parse(tipoObjeto, galletita));
+            Metodo(e, "GiveCookie", Enum.Parse(tipoObjeto, galletita));
         }
         Escribir("tecla " + k + " | en la mano: " + EnLaMano());
     }
@@ -386,25 +386,25 @@ public static class PuenteClaude
         UnityEngine.Object gm = Primero("GameManager");
         if (gm != null)
         {
-            Escribir("  pedidos " + Campo(gm, "pedidosCompletados") + " | perdidos " + Campo(gm, "clientesPerdidos") +
-                     " | tutorial terminado " + Campo(gm, "tutorialTerminado") + " | timeScale " + Time.timeScale);
+            Escribir("  pedidos " + Campo(gm, "completedOrders") + " | perdidos " + Campo(gm, "lostCustomers") +
+                     " | tutorial terminado " + Campo(gm, "tutorialFinished") + " | timeScale " + Time.timeScale);
         }
-        UnityEngine.Object guia = Primero("GuiaTutorial");
+        UnityEngine.Object guia = Primero("TutorialGuide");
         if (guia != null)
         {
-            Escribir("  guía: " + TextoTMP(Campo(guia, "textoTitulo")) + " || " + TextoTMP(Campo(guia, "textoInstruccion")));
+            Escribir("  guía: " + TextoTMP(Campo(guia, "titleText")) + " || " + TextoTMP(Campo(guia, "instructionText")));
         }
         UnityEngine.Object hud = Primero("HUD");
         if (hud != null)
         {
-            Escribir("  HUD: " + TextoTMP(Campo(hud, "textoPedidos")) + " | mensaje: " + TextoTMP(Campo(hud, "textoMensaje")));
+            Escribir("  HUD: " + TextoTMP(Campo(hud, "ordersText")) + " | mensaje: " + TextoTMP(Campo(hud, "messageText")));
         }
-        foreach (UnityEngine.Object c in Buscar("Cliente"))
+        foreach (UnityEngine.Object c in Buscar("Customer"))
         {
             Component cc = (Component)c;
             if (!cc.gameObject.activeInHierarchy) { Escribir("  " + cc.name + ": oculto"); continue; }
             Escribir("  " + cc.name + ": en (" + cc.transform.position.x.ToString("0.0", Inv) + ", " + cc.transform.position.y.ToString("0.0", Inv) +
-                     ") | puede recibir " + Metodo(c, "PuedeRecibirPedido"));
+                     ") | puede recibir " + Metodo(c, "CanReceiveOrder"));
         }
     }
 

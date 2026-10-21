@@ -6,109 +6,109 @@ using UnityEngine.UI;  // Permite trabajar con componentes de interfaz, como Sli
 //
 // Recorrido de un cliente:
 //   1. El GameManager le asigna un pedido y llama a Entrar().
-//   2. Camina hasta el mostrador (MovimientoCliente) y muestra su pedido.
+//   2. Camina hasta el mostrador (CustomerMovement) y muestra su pedido.
 //   3. Recibe el pedido correcto y se va caminando hacia la salida.
 //   4. Cuando sale, espera unos segundos con el puesto libre.
 //   5. Le avisa al GameManager, que decide quién entra después.
-public class Cliente : MonoBehaviour
+public class Customer : MonoBehaviour
 {
     // ===================== REFERENCIAS (Inspector) =====================
 
     // Barra visual de paciencia de este cliente.
-    [SerializeField] private Slider barraPaciencia;
+    [SerializeField] private Slider patienceBar;
 
     // Bebida solicitada.
     [SerializeField]
-    private PlayerInventory.TipoObjeto bebidaPedida =
-        PlayerInventory.TipoObjeto.CafePreparado;
+    private PlayerInventory.ItemType orderedDrink =
+        PlayerInventory.ItemType.Coffee;
 
     // Galletita solicitada. Puede ser Ninguno.
     [SerializeField]
-    private PlayerInventory.TipoObjeto galletitaPedida =
-        PlayerInventory.TipoObjeto.Ninguno;
+    private PlayerInventory.ItemType orderedCookie =
+        PlayerInventory.ItemType.None;
 
     // Referencia al controlador de la partida.
     [SerializeField] private GameManager gameManager;
 
     // Dónde aparece el globo del pedido respecto del cliente.
-    [SerializeField] private Vector3 posicionGlobo = new Vector3(0f, 0.7f, 0f);
+    [SerializeField] private Vector3 bubblePosition = new Vector3(0f, 0.7f, 0f);
 
     // Bandeja que pertenece a este cliente.
     // La mostramos solamente cuando llega a su puesto.
-    [SerializeField] private Bandeja bandejaDelCliente;
+    [SerializeField] private Tray customerTray;
 
     // Tiempo base (en segundos) que el cliente está dispuesto a esperar.
-    [SerializeField] private float pacienciaMaxima = 90f;
+    [SerializeField] private float maxPatience = 90f;
 
     // Segundos extra de paciencia según lo difícil que es el pedido:
     // las bebidas "con leche" llevan más pasos, y la galletita es un paso más.
-    [SerializeField] private float extraConLeche = 10f;
-    [SerializeField] private float extraGalletita = 6f;
+    [SerializeField] private float extraWithMilk = 10f;
+    [SerializeField] private float extraCookie = 6f;
 
     // Segundos que el puesto queda libre entre un cliente y el siguiente.
-    [SerializeField] private float pausaEntreClientes = 2f;
+    [SerializeField] private float pauseBetweenCustomers = 2f;
 
     // ========================= ESTADO INTERNO =========================
 
     // Tiempo que le queda al cliente antes de perder la paciencia.
-    private float pacienciaActual;
+    private float currentPatience;
 
     // Paciencia total para el pedido actual (la base más los extras).
-    private float pacienciaDelPedido = 1f;
+    private float orderPatience = 1f;
 
     // Relleno de la barra de paciencia: le cambiamos el color según cuánto queda.
-    private Image rellenoBarra;
+    private Image barFill;
 
     // Indica si el tiempo de espera está corriendo.
-    private bool pacienciaActiva = false;
+    private bool patienceActive = false;
 
     // Indica que el cliente ya fue atendido y se está yendo.
     // Evita que se entregue el mismo pedido dos veces.
-    private bool cambiandoCliente = false;
+    private bool changingCustomer = false;
 
     // Indica si el cliente ya salió y estamos esperando la pausa.
-    private bool enPausa = false;
+    private bool paused = false;
 
     // Segundos que faltan para terminar la pausa.
-    private float pausaRestante = 0f;
+    private float pauseRemaining = 0f;
 
     // Referencia al script que mueve al cliente.
-    private MovimientoCliente movimiento;
+    private CustomerMovement movement;
 
     // Globo que muestra el pedido arriba del cliente.
-    private GloboPedido globoPedido;
+    private OrderBubble orderBubble;
 
     // ============================ INICIO ============================
 
     private void Awake()
     {
         // Buscamos el componente que controla el movimiento.
-        movimiento = GetComponent<MovimientoCliente>();
+        movement = GetComponent<CustomerMovement>();
 
-        if (movimiento == null)
+        if (movement == null)
         {
             Debug.LogError(gameObject.name + " necesita el script MovimientoCliente.");
         }
 
         // Avisamos si olvidamos asignar la bandeja en el Inspector.
-        if (bandejaDelCliente == null)
+        if (customerTray == null)
         {
             Debug.LogWarning("Falta asignar la bandeja de " + gameObject.name);
         }
 
         // Al comenzar, el cliente todavía no llegó:
         // ocultamos su pedido, su bandeja y su barra de paciencia.
-        OcultarPedido();
+        HideOrder();
     }
 
     private void Start()
     {
         // Buscamos el catálogo de dibujos una sola vez y creamos el globo.
-        CatalogoObjetos catalogo = FindFirstObjectByType<CatalogoObjetos>();
+        ItemCatalog catalog = FindFirstObjectByType<ItemCatalog>();
 
-        if (catalogo != null)
+        if (catalog != null)
         {
-            globoPedido = catalogo.CrearGloboPedido(transform, posicionGlobo);
+            orderBubble = catalog.CreateOrderBubble(transform, bubblePosition);
         }
         else
         {
@@ -116,109 +116,109 @@ public class Cliente : MonoBehaviour
         }
 
         // El Slider tiene un "relleno" (fillRect): guardamos su Image para pintarla.
-        if (barraPaciencia != null && barraPaciencia.fillRect != null)
+        if (patienceBar != null && patienceBar.fillRect != null)
         {
-            rellenoBarra = barraPaciencia.fillRect.GetComponent<Image>();
+            barFill = patienceBar.fillRect.GetComponent<Image>();
         }
     }
 
     // ============================ PEDIDO ============================
 
     // Cambia el pedido del cliente.
-    public void AsignarPedido(
-        PlayerInventory.TipoObjeto nuevaBebida,
-        PlayerInventory.TipoObjeto nuevaGalletita)
+    public void AssignOrder(
+        PlayerInventory.ItemType newDrink,
+        PlayerInventory.ItemType newCookie)
     {
         // Guardamos los nuevos productos.
-        bebidaPedida = nuevaBebida;
-        galletitaPedida = nuevaGalletita;
+        orderedDrink = newDrink;
+        orderedCookie = newCookie;
 
         // Calculamos cuánta paciencia tiene para este pedido (acumulador).
-        pacienciaDelPedido = pacienciaMaxima;
+        orderPatience = maxPatience;
 
-        if (bebidaPedida == PlayerInventory.TipoObjeto.CafeConLeche ||
-            bebidaPedida == PlayerInventory.TipoObjeto.ChocolateConLeche)
+        if (orderedDrink == PlayerInventory.ItemType.CoffeeWithMilk ||
+            orderedDrink == PlayerInventory.ItemType.ChocolateWithMilk)
         {
-            pacienciaDelPedido += extraConLeche;
+            orderPatience += extraWithMilk;
         }
 
-        if (galletitaPedida != PlayerInventory.TipoObjeto.Ninguno)
+        if (orderedCookie != PlayerInventory.ItemType.None)
         {
-            pacienciaDelPedido += extraGalletita;
+            orderPatience += extraCookie;
         }
 
         // Mostramos también el pedido en la consola.
-        Debug.Log("Nuevo pedido: " + bebidaPedida + " + " + galletitaPedida);
+        Debug.Log("Nuevo pedido: " + orderedDrink + " + " + orderedCookie);
     }
 
     // Devuelve true si la bebida y la galletita recibidas
     // son exactamente las que pidió el cliente.
     // && significa Y: ambas condiciones deben ser verdaderas.
     // Si el cliente no pidió galletita, ambos valores deben ser Ninguno.
-    public bool EsPedidoCorrecto(
-        PlayerInventory.TipoObjeto bebida,
-        PlayerInventory.TipoObjeto galletita)
+    public bool IsCorrectOrder(
+        PlayerInventory.ItemType drink,
+        PlayerInventory.ItemType cookie)
     {
-        return bebida == bebidaPedida && galletita == galletitaPedida;
+        return drink == orderedDrink && cookie == orderedCookie;
     }
 
     // ===================== LLEGADA Y SALIDA =====================
 
     // El cliente aparece en la entrada y camina hasta el mostrador.
     // La llama el GameManager.
-    public void Entrar()
+    public void Enter()
     {
         // Lo activamos por si estaba oculto.
         gameObject.SetActive(true);
 
         // Es un cliente nuevo: todavía no fue atendido.
-        cambiandoCliente = false;
-        enPausa = false;
+        changingCustomer = false;
+        paused = false;
 
-        movimiento.Entrar();
+        movement.Enter();
     }
 
     // Muestra el pedido y la bandeja cuando el cliente llega al mostrador.
-    // La llama MovimientoCliente al llegar.
-    public void MostrarPedido()
+    // La llama CustomerMovement al llegar.
+    public void ShowOrder()
     {
         // Activamos la bandeja correspondiente a este puesto.
-        if (bandejaDelCliente != null)
+        if (customerTray != null)
         {
-            bandejaDelCliente.gameObject.SetActive(true);
+            customerTray.gameObject.SetActive(true);
         }
 
         // Mostramos el pedido en el globo.
-        if (globoPedido != null)
+        if (orderBubble != null)
         {
-            globoPedido.Mostrar(bebidaPedida, galletitaPedida);
+            orderBubble.Show(orderedDrink, orderedCookie);
         }
 
         // Solo comenzamos a descontar paciencia después del tutorial.
-        if (gameManager != null && gameManager.EstaTerminadoTutorial())
+        if (gameManager != null && gameManager.IsTutorialFinished())
         {
-            IniciarPaciencia();
+            StartPatience();
         }
     }
 
     // Devuelve la bandeja de este cliente (la usa el tutorial para señalarla).
-    public Bandeja ObtenerBandeja()
+    public Tray GetTray()
     {
-        return bandejaDelCliente;
+        return customerTray;
     }
 
     // Devuelve true si el cliente está en el mostrador esperando.
     // La usa la bandeja antes de entregar el pedido.
-    public bool PuedeRecibirPedido()
+    public bool CanReceiveOrder()
     {
-        return movimiento.EstaEnPuesto() && !cambiandoCliente;
+        return movement.IsAtSpot() && !changingCustomer;
     }
 
     // Se ejecuta cuando entregamos correctamente el pedido.
-    public void RecibirPedido()
+    public void ReceiveOrder()
     {
         // Evitamos que una misma entrega se cuente dos veces.
-        if (!PuedeRecibirPedido())
+        if (!CanReceiveOrder())
         {
             return;
         }
@@ -228,131 +228,131 @@ public class Cliente : MonoBehaviour
         // Avisamos al GameManager para que sume el pedido.
         if (gameManager != null)
         {
-            gameManager.PedidoCompletado(this);
+            gameManager.OrderCompleted(this);
         }
 
         // El cliente se va contento.
-        Retirarse();
+        Leave();
     }
 
     // Se ejecuta cuando el cliente perdió la paciencia.
     // La llama el GameManager.
-    public void IrseEnojado()
+    public void LeaveAngry()
     {
         Debug.Log(gameObject.name + " se fue enojado.");
 
         // Vaciamos su bandeja: lo que había preparado ya no sirve.
-        if (bandejaDelCliente != null)
+        if (customerTray != null)
         {
-            bandejaDelCliente.VaciarBandeja();
+            customerTray.EmptyTray();
         }
 
         // Se va igual que cuando lo atendemos, pero sin sumar pedido.
-        Retirarse();
+        Leave();
     }
 
     // Lo que pasa siempre que un cliente se va,
     // ya sea contento (lo atendimos) o enojado (perdió la paciencia).
     // Así no repetimos el mismo código en dos lugares.
-    private void Retirarse()
+    private void Leave()
     {
         // Bloqueamos nuevas entregas mientras el cliente se va.
-        cambiandoCliente = true;
+        changingCustomer = true;
 
         // El cliente deja de esperar: ocultamos su interfaz y su bandeja.
-        DetenerPaciencia();
-        OcultarPedido();
+        StopPatience();
+        HideOrder();
 
         // IMPORTANTE: damos la orden de caminar hacia la salida.
-        // Cuando llegue, MovimientoCliente llamará a TerminoDeSalir().
-        movimiento.Salir();
+        // Cuando llegue, CustomerMovement llamará a FinishedLeaving().
+        movement.Exit();
     }
 
     // Se ejecuta cuando el cliente terminó de salir.
-    // La llama MovimientoCliente al llegar a la salida.
-    public void TerminoDeSalir()
+    // La llama CustomerMovement al llegar a la salida.
+    public void FinishedLeaving()
     {
         // Empezamos la pausa con el puesto libre.
-        enPausa = true;
-        pausaRestante = pausaEntreClientes;
+        paused = true;
+        pauseRemaining = pauseBetweenCustomers;
     }
 
     // Oculta el globo del pedido, la bandeja y la barra de paciencia.
-    private void OcultarPedido()
+    private void HideOrder()
     {
         // En Awake el globo todavía no existe (se crea en Start),
         // por eso comprobamos que no sea null.
-        if (globoPedido != null)
+        if (orderBubble != null)
         {
-            globoPedido.Ocultar();
+            orderBubble.Hide();
         }
 
-        if (bandejaDelCliente != null)
+        if (customerTray != null)
         {
-            bandejaDelCliente.gameObject.SetActive(false);
+            customerTray.gameObject.SetActive(false);
         }
 
-        if (barraPaciencia != null)
+        if (patienceBar != null)
         {
-            barraPaciencia.gameObject.SetActive(false);
+            patienceBar.gameObject.SetActive(false);
         }
     }
 
     // =========================== PACIENCIA ===========================
 
     // Inicia o reinicia el tiempo de espera del cliente.
-    public void IniciarPaciencia()
+    public void StartPatience()
     {
         // Recupera toda su paciencia y activa el temporizador.
-        pacienciaActual = pacienciaDelPedido;
-        pacienciaActiva = true;
+        currentPatience = orderPatience;
+        patienceActive = true;
 
         // Hacemos visible la barra y la llenamos.
         // 1 representa el 100% de paciencia.
-        if (barraPaciencia != null)
+        if (patienceBar != null)
         {
-            barraPaciencia.gameObject.SetActive(true);
-            barraPaciencia.value = 1f;
+            patienceBar.gameObject.SetActive(true);
+            patienceBar.value = 1f;
         }
 
-        PintarBarra(1f);
+        PaintBar(1f);
 
-        Debug.Log(gameObject.name + " empieza con " + pacienciaActual + " segundos.");
+        Debug.Log(gameObject.name + " empieza con " + currentPatience + " segundos.");
     }
 
     // Detiene el temporizador del cliente.
-    public void DetenerPaciencia()
+    public void StopPatience()
     {
-        pacienciaActiva = false;
+        patienceActive = false;
     }
 
     // Devuelve cuánta paciencia le queda, de 0 (nada) a 1 (toda).
     // La usa el GameManager para calcular la propina.
-    public float ObtenerPorcentajePaciencia()
+    public float GetPatiencePercent()
     {
-        return pacienciaActual / pacienciaDelPedido;
+        return currentPatience / orderPatience;
     }
 
     // Pinta la barra según cuánta paciencia queda:
     // verde (más de la mitad), amarillo (más de un cuarto) o rojo.
-    private void PintarBarra(float porcentaje)
+    private void PaintBar(float percent)
     {
-        if (rellenoBarra == null)
+        if (barFill == null)
         {
             return;
         }
 
-        if (porcentaje > 0.5f)
+        if (percent > 0.5f)
         {
-            rellenoBarra.color = new Color(0.45f, 0.8f, 0.35f);
+            barFill.color = new Color(0.45f, 0.8f, 0.35f);
         }
-        else if (porcentaje > 0.25f)
+        else if (percent > 0.25f)
         {
-            rellenoBarra.color = new Color(0.95f, 0.76f, 0.3f);
+            barFill.color = new Color(0.95f, 0.76f, 0.3f);
         }
         else
         {
-            rellenoBarra.color = new Color(0.85f, 0.3f, 0.25f);
+            barFill.color = new Color(0.85f, 0.3f, 0.25f);
         }
     }
 
@@ -362,70 +362,70 @@ public class Cliente : MonoBehaviour
     // la pausa después de salir y la paciencia en el mostrador.
     private void Update()
     {
-        ActualizarPausa();
-        ActualizarPaciencia();
+        UpdatePause();
+        UpdatePatience();
     }
 
     // Cuenta la pausa entre que el cliente sale y llega el siguiente.
-    private void ActualizarPausa()
+    private void UpdatePause()
     {
-        if (!enPausa)
+        if (!paused)
         {
             return;
         }
 
-        pausaRestante -= Time.deltaTime;
+        pauseRemaining -= Time.deltaTime;
 
-        if (pausaRestante <= 0f)
+        if (pauseRemaining <= 0f)
         {
-            enPausa = false;
+            paused = false;
 
             // Avisamos que el puesto quedó libre.
             // El GameManager decide qué cliente entra después.
             if (gameManager != null)
             {
-                gameManager.ClienteSeFue(this);
+                gameManager.CustomerLeft(this);
             }
         }
     }
 
     // Descuenta la paciencia del cliente mientras espera su pedido.
-    private void ActualizarPaciencia()
+    private void UpdatePatience()
     {
         // Si la paciencia no está activa, no hacemos nada.
-        if (!pacienciaActiva)
+        if (!patienceActive)
         {
             return;
         }
 
         // Restamos el tiempo transcurrido desde el último frame.
         // Mathf.Max evita que la paciencia quede negativa.
-        pacienciaActual -= Time.deltaTime;
-        pacienciaActual = Mathf.Max(pacienciaActual, 0f);
+        currentPatience -= Time.deltaTime;
+        currentPatience = Mathf.Max(currentPatience, 0f);
 
         // Actualizamos visualmente la barra de paciencia.
         // Por ejemplo: 45 / 90 = 0.5 = 50%.
-        float porcentaje = pacienciaActual / pacienciaDelPedido;
+        float percent = currentPatience / orderPatience;
 
-        if (barraPaciencia != null)
+        if (patienceBar != null)
         {
-            barraPaciencia.value = porcentaje;
+            patienceBar.value = percent;
         }
 
-        PintarBarra(porcentaje);
+        PaintBar(percent);
 
         // Si la paciencia llegó a cero...
-        if (pacienciaActual <= 0f)
+        if (currentPatience <= 0f)
         {
             // Detenemos el temporizador para no avisar más de una vez.
-            pacienciaActiva = false;
+            patienceActive = false;
 
             Debug.Log(gameObject.name + " perdió la paciencia.");
 
             // Avisamos al GameManager que este cliente se cansó.
             if (gameManager != null)
             {
-                gameManager.ClienteSinPaciencia(this);
+                gameManager.CustomerOutOfPatience(this);
             }
         }
     }
